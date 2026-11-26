@@ -92,6 +92,27 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Apply Custom App Icon
+        run: |
+          ICON_FILE=$(find . -maxdepth 1 -type f \( -iname "icon.png" -o -iname "icon.jpg" -o -iname "icon.jpeg" -o -iname "icon.webp" \) | head -n 1)
+          if [ -n "$ICON_FILE" ]; then
+            echo "Found custom icon: $ICON_FILE"
+            sudo apt-get update -y
+            sudo apt-get install -y imagemagick
+            rm -rf android/app/src/main/res/mipmap-anydpi-v26
+            rm -f android/app/src/main/res/mipmap-*/ic_launcher_foreground.png
+            convert "$ICON_FILE" -auto-orient -resize 512x512^ -gravity center -extent 512x512 icon_square.png
+            for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+              DENSITY="${pair%%:*}"
+              SIZE="${pair##*:}"
+              mkdir -p "android/app/src/main/res/mipmap-${DENSITY}"
+              convert icon_square.png -resize "${SIZE}x${SIZE}" "android/app/src/main/res/mipmap-${DENSITY}/ic_launcher.png"
+              convert icon_square.png -resize "${SIZE}x${SIZE}" "android/app/src/main/res/mipmap-${DENSITY}/ic_launcher_round.png"
+            done
+          else
+            echo "No custom icon file found, using default icon."
+          fi
+
       - name: Build Debug APK
         run: |
           cd android
@@ -103,4 +124,4 @@ jobs:
         with:
           name: MCH-Care-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
-          
+
