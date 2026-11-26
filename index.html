@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -3664,6 +3664,310 @@
       }
     });
   </script>
+  <!-- ===== MCH Care: Marquee + Setting ဆက်သွယ်ရန် + Auto Update စနစ် ===== -->
+<style>
+  .mch-marquee-bar {
+    width: 100%;
+    background: linear-gradient(90deg, #0f766e, #115e59);
+    color: #ffffff;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 7px 0;
+    font-size: 13px;
+    font-weight: 600;
+    position: relative;
+    z-index: 1000;
+    box-sizing: border-box;
+  }
+  .mch-marquee-text {
+    display: inline-block;
+    padding-left: 100%;
+    animation: mchScrollSlow 40s linear infinite;
+  }
+  @keyframes mchScrollSlow {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+  .mch-setting-extra-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 16px;
+    margin: 14px 0;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+  }
+  .mch-setting-extra-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f766e;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mch-setting-extra-sub {
+    font-size: 12.5px;
+    color: #475569;
+    margin: 0 0 12px;
+    line-height: 1.55;
+  }
+  .mch-contact-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .mch-c-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    color: #ffffff;
+  }
+  .mch-c-btn:active { transform: scale(0.98); }
+  .mch-c-call { background: #16a34a; }
+  .mch-c-viber { background: #7360f2; }
+  .mch-c-tg { background: #0088cc; }
+  .mch-c-fb { background: #1877f2; }
+  .mch-c-mail { background: #ea580c; }
+  .mch-c-copy { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+  .mch-c-update { background: #0f766e; color: #ffffff; }
+  .mch-mini-toast {
+    display: none;
+    text-align: center;
+    font-size: 12.5px;
+    color: #0f766e;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .mch-ota-banner {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 76px;
+    z-index: 3000;
+    background: #0f172a;
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .mch-ota-apply {
+    background: #14b8a6;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-weight: 700;
+    font-size: 12.5px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+(function () {
+  var REMOTE_URL = "https://raw.githubusercontent.com/zin427812621-hub/MCH-Care-/main/index.html";
+
+  function mountMarquee() {
+    if (document.getElementById("mch-top-marquee")) return;
+    var bar = document.createElement("div");
+    bar.id = "mch-top-marquee";
+    bar.className = "mch-marquee-bar";
+    bar.innerHTML =
+      '<span class="mch-marquee-text">' +
+      '✨ U Zin Thu Ko Ko [HA-4] [ကျန်းမာရေးမှူး-၄] ဖန်တီးထားသော မိခင်နှင့်ကလေး ကျန်းမာရေး (MCH Care) အော့ဖ်လိုင်းအက်ပ် 🏥 &nbsp;&nbsp;|&nbsp;&nbsp; ' +
+      '📢 Data / Min / VPN နှင့် Japan TikTok Acc များအပါအဝင် Online Service အမျိုးမျိုးကို ဝယ်ယူရရှိနိုင်ပါသည် (Setting → App ဖန်တီးသူအား ဆက်သွယ်ရန် တွင် ဆက်သွယ်နိုင်ပါသည်) ✨' +
+      '</span>';
+    document.body.insertBefore(bar, document.body.firstChild);
+
+    var header = document.querySelector("header, .app-header, .topbar");
+    if (header && getComputedStyle(header).position === "fixed") {
+      bar.style.position = "fixed";
+      bar.style.top = "0";
+      bar.style.left = "0";
+      header.style.top = bar.offsetHeight + "px";
+      document.body.style.paddingTop =
+        (parseInt(getComputedStyle(document.body).paddingTop || 0, 10) + bar.offsetHeight) + "px";
+    }
+  }
+
+  function findSettingsContainer() {
+    var direct = document.querySelector(
+      '#tab-settings, #settings, #settings-tab, #view-settings, #page-settings, #sec-settings, #panel-settings, [data-tab="settings"], [data-page="settings"], [data-view="settings"]'
+    );
+    if (direct) return direct;
+
+    var byId = document.querySelectorAll('[id*="setting" i]');
+    for (var i = 0; i < byId.length; i++) {
+      if (!/^(BUTTON|A|SPAN|LI|INPUT|LABEL)$/i.test(byId[i].tagName)) return byId[i];
+    }
+
+    var panels = document.querySelectorAll("section, .tab-content, .tab-pane, .view, .page, .screen, main > div");
+    for (var j = 0; j < panels.length; j++) {
+      var txt = panels[j].textContent || "";
+      if (txt.length < 5000 && (txt.indexOf("Outbox") !== -1 || txt.indexOf("အရန်သိမ်း") !== -1 || txt.indexOf("Backup") !== -1 || txt.indexOf("Reset Sample") !== -1)) {
+        return panels[j];
+      }
+    }
+    return null;
+  }
+
+  function mountSettingsCards() {
+    var box = findSettingsContainer();
+    if (!box || box.querySelector("#mch-dev-contact-card")) return;
+
+    var wrap = document.createElement("div");
+    wrap.id = "mch-dev-contact-card";
+    wrap.innerHTML =
+      '<div class="mch-setting-extra-card">' +
+        '<h3 class="mch-setting-extra-title">👨‍⚕️ App ဖန်တီးသူအား ဆက်သွယ်ရန်</h3>' +
+        '<p class="mch-setting-extra-sub">' +
+          '<strong>U Zin Thu Ko Ko [HA-4] (ကျန်းမာရေးမှူး-၄)</strong><br>' +
+          'အက်ပ်နှင့်ပတ်သက်၍ အကြံပြုလိုပါက (သို့) <strong>Data / Min / VPN နှင့် Japan TikTok Acc များ Online Service အမျိုးမျိုး</strong> ဝယ်ယူလိုပါက အောက်ပါချန်နယ်များမှ တိုက်ရိုက်ဆက်သွယ်နိုင်ပါသည်။' +
+        '</p>' +
+        '<div class="mch-contact-grid">' +
+          '<a class="mch-c-btn mch-c-call" href="tel:+959262025689">📞 ဖုန်းခေါ်ရန် (+959262025689)</a>' +
+          '<a class="mch-c-btn mch-c-viber" href="viber://chat?number=%2B959262025689" target="_blank" rel="noopener noreferrer">💜 Viber ဖြင့် ဆက်သွယ်ရန် (+959262025689)</a>' +
+          '<a class="mch-c-btn mch-c-tg" href="https://t.me/cursedhero" target="_blank" rel="noopener noreferrer">✈️ Telegram ဖြင့် ဆက်သွယ်ရန် (@cursedhero)</a>' +
+          '<a class="mch-c-btn mch-c-fb" href="https://www.facebook.com/share/1Lpk5T7swa/" target="_blank" rel="noopener noreferrer">🔵 Facebook ဖြင့် ဆက်သွယ်ရန်</a>' +
+          '<a class="mch-c-btn mch-c-mail" href="mailto:zin427812621@gmail.com?subject=MCH%20Care%20App">✉️ Email ပို့ရန် (zin427812621@gmail.com)</a>' +
+          '<button type="button" id="mchCopyPhoneBtn" class="mch-c-btn mch-c-copy">📋 ဖုန်းနံပါတ် ကူးယူရန်</button>' +
+        '</div>' +
+        '<div id="mchCopyPhoneToast" class="mch-mini-toast">✓ +959262025689 ကို ကူးယူပြီးပါပြီ</div>' +
+      '</div>' +
+      '<div class="mch-setting-extra-card">' +
+        '<h3 class="mch-setting-extra-title">🔄 အက်ပ် Auto Update စနစ်</h3>' +
+        '<p id="mchUpdateStatusText" class="mch-setting-extra-sub">အင်တာနက်ဖွင့်ထားချိန် ဗားရှင်းအသစ်ရှိပါက အလိုအလျောက် Update ဆွဲပေးပါမည် (လူနာမှတ်တမ်းများ မပျောက်ပါ)။</p>' +
+        '<button type="button" id="mchManualUpdateBtn" class="mch-c-btn mch-c-update">🔄 ဗားရှင်းအသစ် စစ်ဆေးရန်</button>' +
+      '</div>';
+
+    box.appendChild(wrap);
+
+    var copyBtn = document.getElementById("mchCopyPhoneBtn");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function () {
+        var ph = "+959262025689";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(ph);
+        } else {
+          var t = document.createElement("textarea");
+          t.value = ph;
+          document.body.appendChild(t);
+          t.select();
+          document.execCommand("copy");
+          document.body.removeChild(t);
+        }
+        var toast = document.getElementById("mchCopyPhoneToast");
+        if (toast) {
+          toast.style.display = "block";
+          setTimeout(function () { toast.style.display = "none"; }, 2200);
+        }
+      });
+    }
+
+    var updBtn = document.getElementById("mchManualUpdateBtn");
+    if (updBtn) {
+      updBtn.addEventListener("click", function () {
+        checkForOtaUpdate(true);
+      });
+    }
+  }
+
+  function hashStr(s) {
+    var clean = String(s || "").replace(/\r\n/g, "\n").trim();
+    var h = 5381;
+    for (var i = 0; i < clean.length; i++) {
+      h = ((h << 5) + h) + clean.charCodeAt(i);
+      h = h & h;
+    }
+    return clean.length + "_" + h;
+  }
+
+  function showOtaBanner() {
+    if (document.getElementById("mchOtaBanner")) return;
+    var b = document.createElement("div");
+    b.id = "mchOtaBanner";
+    b.className = "mch-ota-banner";
+    b.innerHTML =
+      '<span>✨ ဗားရှင်းအသစ် Update ရရှိပါပြီ!</span>' +
+      '<div style="display:flex;gap:6px;align-items:center;">' +
+        '<button type="button" id="mchOtaApplyBtn" class="mch-ota-apply">🔄 အခုပြောင်းမည်</button>' +
+        '<button type="button" id="mchOtaCloseBtn" style="background:transparent;border:none;color:#94a3b8;font-size:16px;cursor:pointer;">✕</button>' +
+      '</div>';
+    document.body.appendChild(b);
+    document.getElementById("mchOtaApplyBtn").onclick = function () { location.reload(); };
+    document.getElementById("mchOtaCloseBtn").onclick = function () { b.remove(); };
+  }
+
+  function checkForOtaUpdate(isManual) {
+    var statusEl = document.getElementById("mchUpdateStatusText");
+    if (!navigator.onLine) {
+      if (isManual && statusEl) statusEl.textContent = "⚠️ အင်တာနက်ချိတ်ဆက်ထားခြင်း မရှိသေးပါ (Offline အသုံးပြုနိုင်ပါသည်)။";
+      return;
+    }
+    if (isManual && statusEl) statusEl.textContent = "⏳ ဗားရှင်းအသစ် စစ်ဆေးနေပါသည်...";
+
+    fetch(REMOTE_URL + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then(function (remoteHtml) {
+        if (!remoteHtml || remoteHtml.length < 2000 || remoteHtml.indexOf("</html>") === -1) {
+          throw new Error("Invalid HTML");
+        }
+        var currentHash = sessionStorage.getItem("mch_loaded_hash") || "";
+        var remoteHash = hashStr(remoteHtml);
+        if (currentHash && remoteHash !== currentHash) {
+          localStorage.setItem("mch_ota_html", remoteHtml);
+          if (statusEl) statusEl.textContent = "✅ ဗားရှင်းအသစ် ဒေါင်းလုဒ်ပြီးပါပြီ။ အောက်ပါခလုတ်မှ ပြန်ဖွင့်ပါ။";
+          showOtaBanner();
+        } else if (isManual && statusEl) {
+          statusEl.textContent = "✅ နောက်ဆုံးဗားရှင်း ဖြစ်နေပါပြီ။";
+        }
+      })
+      .catch(function () {
+        if (isManual && statusEl) statusEl.textContent = "⚠️ ဆာဗာသို့ ချိတ်ဆက်မရပါ (VPN သို့မဟုတ် အင်တာနက် စစ်ဆေးပေးပါ)။";
+      });
+  }
+
+  function initAll() {
+    mountMarquee();
+    mountSettingsCards();
+    setTimeout(function () { checkForOtaUpdate(false); }, 3000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAll);
+  } else {
+    initAll();
+  }
+
+  document.addEventListener("click", function () {
+    setTimeout(mountSettingsCards, 80);
+  });
+
+  if (typeof MutationObserver !== "undefined") {
+    var obs = new MutationObserver(function () { mountSettingsCards(); });
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+  }
+})();
+</script>
+  
 </body>
 </html>
 ```
