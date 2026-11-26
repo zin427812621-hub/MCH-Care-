@@ -1,0 +1,3669 @@
+```html
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>မိခင်နှင့်ကလေး ကျန်းမာရေး (MCH Care)</title>
+  <style>
+    /* ==========================================================================
+       1. CORE DESIGN TOKENS (100% Offline, High-Contrast, Crisp Mobile UI)
+       ========================================================================== */
+    :root {
+      --bg-app: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-subtle: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-soft: #ccfbf1;
+      --primary-border: #14b8a6;
+      --primary-text: #0f766e;
+
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --danger-border: #fca5a5;
+      --danger-text: #991b1b;
+
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --warning-border: #fcd34d;
+      --warning-text: #92400e;
+
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --success-border: #6ee7b7;
+      --success-text: #065f46;
+
+      --info: #2563eb;
+      --info-soft: #eff6ff;
+      --info-border: #93c5fd;
+      --info-text: #1e40af;
+
+      --boy-main: #0284c7;
+      --boy-soft: #e0f2fe;
+      --girl-main: #db2777;
+      --girl-soft: #fce7f3;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 6px 18px rgba(15, 23, 42, 0.12);
+      --nav-height: 68px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: "Padauk", "Pyidaungsu", "Myanmar Text", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       2. APP SHELL, SLIM MARQUEE, CLEAN HEADER & TOP-RIGHT BELL
+       ========================================================================== */
+    .app-shell {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 32px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Very Top Slim Marquee Banner */
+    .marquee-banner {
+      background: linear-gradient(90deg, #0f766e, #115e59);
+      color: #ffffff;
+      height: 28px;
+      line-height: 28px;
+      font-size: 12.5px;
+      font-weight: 700;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      z-index: 50;
+    }
+
+    .marquee-track {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marqueeRun 28s linear infinite;
+    }
+
+    .marquee-banner:hover .marquee-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes marqueeRun {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Sticky Clean Non-Overlapping Header */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 45;
+      height: 60px;
+      padding: 0 14px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+    }
+
+    .brand-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-sub {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .net-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .net-dot.offline {
+      background: #94a3b8;
+    }
+
+    /* Separate Spacious Top-Right Bell Button ONLY */
+    .bell-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s ease, transform 0.12s ease;
+    }
+
+    .bell-btn:active {
+      transform: scale(0.93);
+      background: var(--primary-soft);
+    }
+
+    .bell-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      min-width: 21px;
+      height: 21px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: var(--danger);
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+    }
+
+    /* Main Scroll Area */
+    .main-content {
+      flex: 1;
+      padding: 14px 12px calc(var(--nav-height) + 28px) 12px;
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+      animation: fadeUp 0.18s ease-out;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       3. BOTTOM NAVIGATION BAR (5 CLEAR TABS)
+       ========================================================================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 560px;
+      height: var(--nav-height);
+      background: var(--bg-surface);
+      border-top: 1.5px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 5px 4px;
+      gap: 3px;
+      z-index: 45;
+      box-shadow: 0 -3px 12px rgba(15, 23, 42, 0.06);
+    }
+
+    .nav-item {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 12px;
+      min-height: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.1;
+    }
+
+    .nav-item.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    /* ==========================================================================
+       4. CARDS, HIGH-CONTRAST BUTTONS, FORMS & GRIDS
+       ========================================================================== */
+    .card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-danger {
+      background: var(--danger-soft);
+      border: 2px solid var(--danger);
+      color: var(--danger-text);
+    }
+
+    .section-heading {
+      margin: 0 0 10px 0;
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    /* Crystal Clear High-Contrast Buttons (Min 48px Tap Target) */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 48px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid transparent;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.3;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn-block { width: 100%; }
+    .btn-sm { min-height: 40px; padding: 7px 12px; font-size: 13px; }
+
+    .btn-primary { background: var(--primary); color: #ffffff; box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25); }
+    .btn-danger { background: var(--danger); color: #ffffff; }
+    .btn-success { background: var(--success); color: #ffffff; }
+    .btn-soft { background: var(--primary-soft); color: var(--primary-text); border-color: var(--primary-border); }
+    .btn-outline { background: #ffffff; color: var(--text-main); border-color: var(--border); }
+
+    /* Stat Cards on Home */
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-num {
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .stat-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Quick Action 2x2 Big Tiles */
+    .quick-tile {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 15px 10px;
+      min-height: 102px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.12s ease, border-color 0.15s ease;
+    }
+
+    .quick-tile:active {
+      transform: scale(0.96);
+      border-color: var(--primary);
+    }
+
+    .tile-badge {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    /* Segmented Pill Bar */
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .pill-row::-webkit-scrollbar { display: none; }
+
+    .pill-btn {
+      flex-shrink: 0;
+      min-height: 44px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pill-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 11px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 5px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14.5px;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    /* Tappable Checkbox Cards */
+    .check-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 9px 11px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .check-card input[type="checkbox"] {
+      width: 21px;
+      height: 21px;
+      accent-color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .check-card.checked {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    /* ==========================================================================
+       5. INTERACTIVE 5-SECTION PATIENT ACCORDION (100% VISIBLY EXPANDING)
+       ========================================================================== */
+    .acc-item {
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.18s ease;
+    }
+
+    .acc-item.open {
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.14);
+    }
+
+    .acc-header {
+      width: 100%;
+      min-height: 58px;
+      padding: 12px 14px;
+      border: none;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .acc-item.open .acc-header {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border-bottom: 1.5px solid var(--primary-border);
+    }
+
+    .acc-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .acc-title {
+      flex: 1;
+      line-height: 1.35;
+    }
+
+    .acc-chevron {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--primary);
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .acc-item.open .acc-chevron {
+      transform: rotate(180deg);
+    }
+
+    .acc-body {
+      display: none;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .acc-item.open .acc-body {
+      display: block;
+    }
+
+    /* Sticky Form Bottom Action Bar */
+    .form-sticky-bar {
+      position: sticky;
+      bottom: calc(var(--nav-height) + 6px);
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 10px;
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Badges & Status Boxes */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .badge-success { background: var(--success-soft); color: var(--success-text); border: 1px solid var(--success-border); }
+    .badge-warning { background: var(--warning-soft); color: var(--warning-text); border: 1px solid var(--warning-border); }
+    .badge-danger { background: var(--danger-soft); color: var(--danger-text); border: 1px solid var(--danger-border); }
+    .badge-info { background: var(--info-soft); color: var(--info-text); border: 1px solid var(--info-border); }
+
+    .sub-card {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 11px;
+      margin-bottom: 9px;
+    }
+
+    /* Canvas Growth Chart Wrapper */
+    .chart-box {
+      width: 100%;
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      margin: 10px 0;
+    }
+
+    .chart-box canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Knowledge Base Guide Styling */
+    .guide-card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .guide-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .star-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .guide-content h4 {
+      margin: 12px 0 6px 0;
+      color: var(--primary);
+      font-size: 14.5px;
+    }
+
+    .guide-content ul, .guide-content ol {
+      margin: 4px 0 10px 0;
+      padding-left: 20px;
+    }
+
+    .guide-content li {
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid var(--border);
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .data-table th {
+      background: #f1f5f9;
+      font-weight: 800;
+    }
+
+    /* ==========================================================================
+       6. FULL-SCREEN NOTIFICATION DRAWER, MODALS, TOASTS & PIN LOCK
+       ========================================================================== */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: var(--bg-app);
+      display: none;
+      flex-direction: column;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .drawer-overlay.open {
+      display: flex;
+      animation: fadeUp 0.16s ease-out;
+    }
+
+    .drawer-top {
+      background: var(--bg-surface);
+      border-bottom: 1.5px solid var(--border);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .noti-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-left: 5px solid var(--primary);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .noti-card.urgent {
+      background: var(--danger-soft);
+      border-color: var(--danger-border);
+      border-left: 6px solid var(--danger);
+    }
+
+    .noti-card.unread {
+      box-shadow: 0 3px 10px rgba(15, 118, 110, 0.15);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 95;
+      background: rgba(15, 23, 42, 0.65);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+    @media (min-width: 540px) { .modal-backdrop { align-items: center; } }
+
+    .modal-box {
+      width: 100%;
+      max-width: 520px;
+      max-height: 86vh;
+      overflow-y: auto;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .toast-wrap {
+      position: fixed;
+      top: 94px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 520px;
+      z-index: 110;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .toast {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .toast.danger {
+      background: #b91c1c;
+    }
+
+    /* Switch Toggle */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .switch-row:last-child { border-bottom: none; }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #cbd5e1;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      left: 3px;
+      bottom: 3px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    .switch input:checked + .slider { background: var(--primary); }
+    .switch input:checked + .slider::before { transform: translateX(22px); }
+
+    /* PIN Lock Screen */
+    .pin-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      background: var(--bg-app);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .pin-overlay.locked { display: flex; }
+    .pin-dots { display: flex; gap: 14px; margin: 18px 0 22px; }
+    .pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--primary); }
+    .pin-dot.filled { background: var(--primary); }
+    .pin-pad { display: grid; grid-template-columns: repeat(3, 74px); gap: 10px; }
+    .pin-key {
+      width: 74px; height: 58px; border-radius: 14px;
+      border: 1.5px solid var(--border); background: #ffffff;
+      font-size: 20px; font-weight: 800; color: var(--text-main); cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 1. SLIM TEAL MARQUEE BANNER -->
+    <div class="marquee-banner">
+      <div class="marquee-track">
+        U Zin Thu Ko Ko [HA-4] [ကျန်းမာရေးမှူး-၄] • မိခင်နှင့်ကလေး ကျန်းမာရေးစောင့်ရှောက်မှု မှတ်တမ်းများကို အင်တာနက်မလိုဘဲ လွယ်ကူစွာ စောင့်ရှောက်မှတ်တမ်းတင်နိုင်ရန် ဖန်တီးထားပါသည်။
+      </div>
+    </div>
+
+    <!-- 2. CLEAN NON-OVERLAPPING TOP HEADER WITH SEPARATE TOP-RIGHT BELL -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            <path d="M12 7v6"/><path d="M9 10h6"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1 class="brand-title">မိခင်နှင့်ကလေး ကျန်းမာရေး</h1>
+          <div class="brand-sub">
+            <span id="headerNetDot" class="net-dot"></span>
+            <span>MCH Care • Offline-First</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dedicated Top-Right Notification Bell Button ONLY -->
+      <button type="button" class="bell-btn" id="openNotiBellBtn" onclick="openNotiDrawer()" aria-label="သတိပေးချက်များ ကြည့်ရန်">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span id="bellUnreadBadge" class="bell-badge">0</span>
+      </button>
+    </header>
+
+    <!-- 3. MAIN CONTENT VIEWS -->
+    <main class="main-content">
+
+      <!-- ==================== TAB 1: ပင်မ (HOME) ==================== -->
+      <section id="view-home" class="tab-view active">
+        <!-- Summary Stats -->
+        <div class="grid-3" style="margin-bottom:12px;">
+          <div class="stat-card" onclick="switchTab('records')" style="cursor:pointer;">
+            <div class="stat-num" id="statPatients" style="color:var(--primary);">0</div>
+            <div class="stat-label">စုစုပေါင်းလူနာ</div>
+          </div>
+          <div class="stat-card" onclick="openNotiDrawer('appt')" style="cursor:pointer;">
+            <div class="stat-num" id="statAppts" style="color:var(--info);">0</div>
+            <div class="stat-label">လာမည့်ရက်ချိန်း</div>
+          </div>
+          <div class="stat-card" onclick="openNotiDrawer('weight')" style="cursor:pointer;">
+            <div class="stat-num" id="statUrgent" style="color:var(--danger);">0</div>
+            <div class="stat-label">အရေးပေါ်သတိပေးချက်</div>
+          </div>
+        </div>
+
+        <!-- 4 Big Clear 2x2 Quick Action Buttons -->
+        <h2 class="section-heading">⚡ အမြန်အသုံးပြုရန်</h2>
+        <div class="grid-2" style="margin-bottom:14px;">
+          <button type="button" class="quick-tile" onclick="openNewPatientForm()">
+            <div class="tile-badge" style="background:var(--primary-soft);">➕</div>
+            <span>လူနာအသစ်ထည့်</span>
+          </button>
+          <button type="button" class="quick-tile" onclick="switchTab('tools'); switchToolPanel('edd');">
+            <div class="tile-badge" style="background:var(--info-soft);">🧮</div>
+            <span>EDD တွက်စက်</span>
+          </button>
+          <button type="button" class="quick-tile" onclick="switchTab('tools'); switchToolPanel('growth');">
+            <div class="tile-badge" style="background:var(--success-soft);">📈</div>
+            <span>ကိုယ်အလေးချိန်ဂရပ်</span>
+          </button>
+          <button type="button" class="quick-tile" onclick="switchTab('guides'); openGuideDetail('danger-signs');">
+            <div class="tile-badge" style="background:var(--danger-soft);">🚨</div>
+            <span>အန္တရာယ်လက္ခဏာ</span>
+          </button>
+        </div>
+
+        <!-- Upcoming Vaccines & Appointments Preview Card -->
+        <div class="card" style="border-left:5px solid var(--primary);">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+            <h3 class="section-heading" style="margin:0; font-size:14.5px;">🔔 လာမည့် ကာကွယ်ဆေးနှင့် ရက်ချိန်းများ</h3>
+            <button type="button" class="btn btn-soft btn-sm" onclick="openNotiDrawer('all')">အားလုံးကြည့်</button>
+          </div>
+          <div id="homeNotiPreview"></div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: ဗဟုသုတ (KNOWLEDGE) ==================== -->
+      <section id="view-guides" class="tab-view">
+        <h2 class="section-heading">📚 မိခင်နှင့်ကလေး ကျန်းမာရေး ဗဟုသုတ</h2>
+
+        <div class="form-group">
+          <input type="text" id="guideSearchInput" class="form-input" placeholder="ဗဟုသုတ ရှာဖွေရန် (ဥပမာ - ကာကွယ်ဆေး၊ ဓာတ်ဆား၊ သားဆက်ခြား)..." oninput="renderGuides()" />
+        </div>
+
+        <div class="pill-row">
+          <button type="button" class="pill-btn active" id="gFilter-all" onclick="setGuideFilter('all')">အားလုံး (၉)</button>
+          <button type="button" class="pill-btn" id="gFilter-bookmarked" onclick="setGuideFilter('bookmarked')">★ သိမ်းထားသည်</button>
+          <button type="button" class="pill-btn" id="gFilter-pregnancy" onclick="setGuideFilter('pregnancy')">🤰 ကိုယ်ဝန်ဆောင်</button>
+          <button type="button" class="pill-btn" id="gFilter-danger" onclick="setGuideFilter('danger')">🚨 အန္တရာယ်လက္ခဏာ</button>
+          <button type="button" class="pill-btn" id="gFilter-child" onclick="setGuideFilter('child')">👶 ကလေး/ကာကွယ်ဆေး</button>
+          <button type="button" class="pill-btn" id="gFilter-fp" onclick="setGuideFilter('fp')">💊 သားဆက်ခြား</button>
+        </div>
+
+        <div id="guidesListContainer"></div>
+      </section>
+
+      <!-- ==================== TAB 3: ကိရိယာ (TOOLS) ==================== -->
+      <section id="view-tools" class="tab-view">
+        <h2 class="section-heading">🛠️ တွက်ချက်စက်နှင့် ကြီးထွားမှုဂရပ်များ</h2>
+
+        <div class="pill-row">
+          <button type="button" class="pill-btn active" id="toolPill-edd" onclick="switchToolPanel('edd')">🧮 EDD တွက်စက်</button>
+          <button type="button" class="pill-btn" id="toolPill-growth" onclick="switchToolPanel('growth')">📈 ကိုယ်အလေးချိန်ဂရပ်</button>
+          <button type="button" class="pill-btn" id="toolPill-bp" onclick="switchToolPanel('bp')">🩺 သွေးပေါင် / BMI</button>
+        </div>
+
+        <!-- Tool 1: EDD & Baby Size Calculator -->
+        <div id="toolPanel-edd">
+          <div class="card">
+            <h3 class="section-heading">📅 ကိုယ်ဝန်အပတ်၊ EDD နှင့် ကလေးအရွယ်အစား တွက်စက်</h3>
+            <div class="form-group">
+              <label class="form-label" for="eddLmpInput">နောက်ဆုံးရာသီလာသည့် ပထမရက် (LMP)</label>
+              <input type="date" id="eddLmpInput" class="form-input" onchange="calculateEddTool()" />
+            </div>
+            <div id="eddResultBox" class="card" style="background:var(--primary-soft); border:2px solid var(--primary); color:var(--primary-dark); margin-bottom:0;"></div>
+          </div>
+        </div>
+
+        <!-- Tool 2: Auto-Plotting Growth Charts (Canvas 100% Offline) -->
+        <div id="toolPanel-growth" style="display:none;">
+          <div class="pill-row">
+            <button type="button" class="pill-btn active" id="chartTab-mother" onclick="setChartMode('mother')">🤰 မိခင် (၀-၄၀ ပတ်)</button>
+            <button type="button" class="pill-btn" id="chartTab-boy" onclick="setChartMode('boy')">👦 ယောက်ျားလေး (၅ နှစ်အောက်)</button>
+            <button type="button" class="pill-btn" id="chartTab-girl" onclick="setChartMode('girl')">👧 မိန်းကလေး (၅ နှစ်အောက်)</button>
+          </div>
+
+          <div class="card" id="growthChartCard">
+            <div id="chartBannerHeader" style="padding:10px 12px; border-radius:10px; font-weight:800; font-size:14.5px; margin-bottom:10px; background:var(--primary-soft); color:var(--primary-dark);">
+              🤰 ကိုယ်ဝန်ဆောင် ကိုယ်အလေးချိန်ဇယား (မိခင် ၀-၄၀ ပတ်)
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="chartPatientSelect">လူနာမှတ်တမ်းမှ တိုက်ရိုက်ခေါ်ကြည့်ရန်</label>
+              <select id="chartPatientSelect" class="form-select" onchange="drawActiveChart()">
+                <option value="">-- ယာယီစမ်းသပ် အမှတ်ထည့်ရန် --</option>
+              </select>
+            </div>
+
+            <div class="chart-box">
+              <canvas id="growthCanvas" width="480" height="330"></canvas>
+            </div>
+
+            <div id="chartStatusBanner" style="padding:10px 12px; border-radius:10px; font-weight:800; font-size:13.5px; margin-bottom:12px;"></div>
+
+            <div class="grid-2" style="margin-bottom:10px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" id="quickXLabel">ကိုယ်ဝန်အပတ် (0-40)</label>
+                <input type="number" id="quickXInput" class="form-input" min="0" max="60" placeholder="24" />
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">ကိုယ်အလေးချိန် (kg)</label>
+                <input type="number" step="0.1" id="quickYInput" class="form-input" min="1" max="120" placeholder="52.5" />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <button type="button" class="btn btn-primary" onclick="addQuickChartPoint()">➕ ဂရပ်တွင် ထည့်မည်</button>
+              <button type="button" class="btn btn-outline" onclick="clearQuickChartPoints()">🗑️ အမှတ်ရှင်းမည်</button>
+            </div>
+
+            <div id="chartPointsSummary" class="muted" style="margin-top:10px; font-weight:700;"></div>
+          </div>
+        </div>
+
+        <!-- Tool 3 & 4: Blood Pressure & BMI -->
+        <div id="toolPanel-bp" style="display:none;">
+          <div class="card">
+            <h3 class="section-heading">🩺 သွေးပေါင်ချိန် အဆင့်သတ်မှတ်စက် (BP)</h3>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="bpSysInput">အပေါ်သွေး (Systolic)</label>
+                <input type="number" id="bpSysInput" class="form-input" placeholder="120" oninput="calculateBpTool()" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="bpDiaInput">အောက်သွေး (Diastolic)</label>
+                <input type="number" id="bpDiaInput" class="form-input" placeholder="80" oninput="calculateBpTool()" />
+              </div>
+            </div>
+            <div id="bpResultBox" style="display:none; padding:12px; border-radius:10px; font-weight:800; font-size:13.5px;"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-heading">⚖️ BMI (ကိုယ်အလေးချိန် အချိုး) တွက်စက်</h3>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="bmiWeightInput">ကိုယ်အလေးချိန် (kg)</label>
+                <input type="number" step="0.1" id="bmiWeightInput" class="form-input" placeholder="55" oninput="calculateBmiTool()" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="bmiHeightInput">အရပ် (cm)</label>
+                <input type="number" id="bmiHeightInput" class="form-input" placeholder="158" oninput="calculateBmiTool()" />
+              </div>
+            </div>
+            <div id="bmiResultBox" style="display:none; padding:12px; border-radius:10px; font-weight:800; font-size:13.5px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 4: မှတ်တမ်း (RECORDS) ==================== -->
+      <section id="view-records" class="tab-view">
+        <!-- 4A: Patient List View -->
+        <div id="recordsListPanel">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
+            <h2 class="section-heading" style="margin:0;">📋 မိခင်နှင့်ကလေး မှတ်တမ်းများ</h2>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openNewPatientForm()">➕ အသစ်ထည့်</button>
+          </div>
+
+          <div class="form-group">
+            <input type="text" id="patientSearchInput" class="form-input" placeholder="အမည်၊ ID သို့မဟုတ် ရွာအမည်ဖြင့် ရှာရန်..." oninput="renderPatientList()" />
+          </div>
+
+          <div id="patientsListContainer"></div>
+        </div>
+
+        <!-- 4B: Patient Form View (5 Interactive Expanding Accordion Buttons) -->
+        <div id="recordsFormPanel" style="display:none;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="attemptClosePatientForm()">← စာရင်းသို့</button>
+            <strong id="patientFormTitle" style="font-size:14.5px; color:var(--primary-dark);">➕ လူနာမှတ်တမ်း အသစ်ထည့်သွင်းခြင်း</strong>
+          </div>
+
+          <form id="patientRecordForm" onsubmit="savePatientRecord(event)" oninput="markFormDirty()">
+            <input type="hidden" id="pId" />
+
+            <!-- ===== ACCORDION BUTTON 1 ===== -->
+            <div class="acc-item open" id="accItem-1">
+              <button type="button" class="acc-header" onclick="toggleAccordion(1)">
+                <span class="acc-num">၁</span>
+                <span class="acc-title">အခြေခံကိုယ်ရေး နှင့် မိသားစုမှတ်တမ်း</span>
+                <span class="acc-chevron">▼</span>
+              </button>
+              <div class="acc-body">
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">အမှတ်စဉ် (Serial No)</label>
+                    <input type="text" id="pSerial" class="form-input" placeholder="၀၀၁" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">မြို့နယ်</label>
+                    <input type="text" id="pTownship" class="form-input" placeholder="ပွင့်ဖြူမြို့နယ်" />
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">ရပ်ကွက် / ကျေးရွာ *</label>
+                    <input type="text" id="pVillage" class="form-input" required placeholder="ရွာအမည်" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">အိမ်အမှတ် / လမ်း</label>
+                    <input type="text" id="pAddress" class="form-input" placeholder="အမှတ် (၁၂)" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">မိခင်အမည် *</label>
+                  <input type="text" id="pMotherName" class="form-input" required placeholder="ဒေါ်အေးအေး" />
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">အသက် (နှစ်)</label>
+                    <input type="number" id="pMotherAge" class="form-input" placeholder="28" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">သွေးအုပ်စု</label>
+                    <select id="pBloodGroup" class="form-select">
+                      <option value="">ရွေးချယ်ရန်</option>
+                      <option value="A+">A+</option><option value="A-">A-</option>
+                      <option value="B+">B+</option><option value="B-">B-</option>
+                      <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                      <option value="O+">O+</option><option value="O-">O-</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">မှတ်ပုံတင်အမှတ်</label>
+                  <input type="text" id="pNrc" class="form-input" placeholder="၈/ပဖန(နိုင်)၁၂၃၄၅၆" />
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">ပညာအရည်အချင်း</label>
+                    <input type="text" id="pEducation" class="form-input" placeholder="အထက်တန်း" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">အလုပ်အကိုင်</label>
+                    <input type="text" id="pOccupation" class="form-input" placeholder="တောင်သူ / မှီခို" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">ဖုန်းနံပါတ်</label>
+                  <input type="tel" id="pPhone" class="form-input" placeholder="09-xxxxxxxxx" />
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">ခင်ပွန်းအမည်</label>
+                    <input type="text" id="pHusbandName" class="form-input" placeholder="ဦးကျော်မင်း" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">ခင်ပွန်းအလုပ်အကိုင်</label>
+                    <input type="text" id="pHusbandOcc" class="form-input" placeholder="တောင်သူ" />
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">နောက်ဆုံးရာသီလာရက် (LMP)</label>
+                    <input type="date" id="pLmp" class="form-input" onchange="autoCalcFormEdd()" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">ခန့်မှန်းမွေးဖွားရက် (EDD)</label>
+                    <input type="date" id="pEdd" class="form-input" />
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">📅 ဆရာမ နောက်တစ်ကြိမ် ချိန်းဆိုရက် (Auto Noti)</label>
+                  <input type="date" id="pNextAppt" class="form-input" />
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== ACCORDION BUTTON 2 ===== -->
+            <div class="acc-item" id="accItem-2">
+              <button type="button" class="acc-header" onclick="toggleAccordion(2)">
+                <span class="acc-num">၂</span>
+                <span class="acc-title">ယခင်ကိုယ်ဝန်များ အခြေအနေ</span>
+                <span class="acc-chevron">▼</span>
+              </button>
+              <div class="acc-body">
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">ကိုယ်ဝန်စုစုပေါင်းအကြိမ် (G)</label>
+                    <input type="number" id="pGravida" class="form-input" min="0" placeholder="2" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">မွေးဖွားပြီးအကြိမ် (P)</label>
+                    <input type="number" id="pPara" class="form-input" min="0" placeholder="1" />
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">သားပျက်/သားလျှော (A)</label>
+                    <input type="number" id="pAbortion" class="form-input" min="0" placeholder="0" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">အသက်ရှင်ကလေးဦးရေ</label>
+                    <input type="number" id="pLiving" class="form-input" min="0" placeholder="1" />
+                  </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0 8px;">
+                  <strong style="font-size:13.5px;">ယခင်ကိုယ်ဝန် မှတ်တမ်းများ</strong>
+                  <button type="button" class="btn btn-soft btn-sm" onclick="openAddPrevPregInline()">+ ယခင်ကိုယ်ဝန်မှတ်တမ်း ထည့်မည်</button>
+                </div>
+
+                <!-- Inline Add Form for Previous Pregnancy -->
+                <div id="prevPregAddBox" class="sub-card" style="display:none; border-color:var(--primary);">
+                  <div class="grid-2">
+                    <div class="form-group"><label class="form-label">မွေးနှစ်</label><input type="text" id="ppYear" class="form-input" placeholder="2023" /></div>
+                    <div class="form-group"><label class="form-label">ကိုယ်ဝန်ကာလ</label><input type="text" id="ppDuration" class="form-input" placeholder="လစေ့ / ၉ လ" /></div>
+                  </div>
+                  <div class="grid-2">
+                    <div class="form-group">
+                      <label class="form-label">မွေးဖွားပုံ</label>
+                      <select id="ppMode" class="form-select">
+                        <option value="ရိုးရိုး">ရိုးရိုး</option>
+                        <option value="ခွဲမွေး">ခွဲမွေး</option>
+                        <option value="ညှပ်ဆွဲ">ညှပ်ဆွဲ</option>
+                      </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">ကလေးအလေးချိန် (kg)</label><input type="number" step="0.1" id="ppWeight" class="form-input" placeholder="3.1" /></div>
+                  </div>
+                  <div class="form-group"><label class="form-label">အခြေအနေ</label><input type="text" id="ppStatus" class="form-input" placeholder="ကျန်းမာ / အသက်ရှင်" /></div>
+                  <div class="grid-2">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('prevPregAddBox').style.display='none'">ပိတ်မည်</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="confirmAddPrevPreg()">✓ စာရင်းထည့်မည်</button>
+                  </div>
+                </div>
+
+                <div id="prevPregListEl"></div>
+              </div>
+            </div>
+
+            <!-- ===== ACCORDION BUTTON 3 ===== -->
+            <div class="acc-item" id="accItem-3">
+              <button type="button" class="acc-header" onclick="toggleAccordion(3)">
+                <span class="acc-num">၃</span>
+                <span class="acc-title">ကိုယ်ဝန်ဆောင်မိခင် ရာဇဝင်</span>
+                <span class="acc-chevron">▼</span>
+              </button>
+              <div class="acc-body">
+                <div class="form-label" style="margin-bottom:8px;">ယခင်ရောဂါရာဇဝင် (ရှိလျှင် နှိပ်၍ အမှန်ခြစ်ပါ)</div>
+                <div class="grid-2" id="historyCheckGrid" style="margin-bottom:14px;"></div>
+
+                <div class="form-label" style="margin-bottom:8px;">🧪 ဓာတ်ခွဲစစ်ဆေးချက်များ</div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">HIV</label>
+                    <select id="pLabHiv" class="form-select">
+                      <option value="မစစ်ရသေး">မစစ်ရသေး</option><option value="မရှိ (-)">မရှိ (-)</option><option value="ရှိ (+)">ရှိ (+)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Syphilis / VDRL</label>
+                    <select id="pLabVdrl" class="form-select">
+                      <option value="မစစ်ရသေး">မစစ်ရသေး</option><option value="မရှိ (-)">မရှိ (-)</option><option value="ရှိ (+)">ရှိ (+)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid-3">
+                  <div class="form-group">
+                    <label class="form-label">Hep B</label>
+                    <select id="pLabHepB" class="form-select">
+                      <option value="မစစ်ရသေး">မစစ်ရသေး</option><option value="မရှိ (-)">မရှိ (-)</option><option value="ရှိ (+)">ရှိ (+)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Hb% သွေးအား</label>
+                    <input type="text" id="pLabHb" class="form-input" placeholder="11.5 g/dL" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">ဆီးစစ်ချက်</label>
+                    <input type="text" id="pLabUrine" class="form-input" placeholder="ပုံမှန် (-)" />
+                  </div>
+                </div>
+
+                <div class="form-label" style="margin:6px 0 8px;">💉 မေးခိုင်ကာကွယ်ဆေး (TT/Td) နှင့် ဆေးဝါးများ</div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">TT/Td ပထမအကြိမ် ရက်စွဲ</label>
+                    <input type="date" id="pTt1" class="form-input" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">TT/Td ဒုတိယအကြိမ် ရက်စွဲ</label>
+                    <input type="date" id="pTt2" class="form-input" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">သန်ချဆေး သောက်သည့်ရက် (ကိုယ်ဝန် ၄ လကျော်)</label>
+                  <input type="date" id="pDewormDate" class="form-input" />
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">သံဓာတ်/ဖောလစ် နှင့် ဗီတာမင် B1 မှတ်ချက်</label>
+                  <textarea id="pVitNotes" class="form-textarea" rows="2" placeholder="နေ့စဉ် ၁ ပြား ပုံမှန်သောက်ရန် ပေးပြီး"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== ACCORDION BUTTON 4 ===== -->
+            <div class="acc-item" id="accItem-4">
+              <button type="button" class="acc-header" onclick="toggleAccordion(4)">
+                <span class="acc-num">၄</span>
+                <span class="acc-title">ယခုကိုယ်ဝန် စောင့်ရှောက်မှု ANC (၁ - ၁၂ ကြိမ်)</span>
+                <span class="acc-chevron">▼</span>
+              </button>
+              <div class="acc-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+                  <span class="muted">အလေးချိန်ကျဆင်းပါက အနီရောင် Noti အလိုအလျောက် ကျပါမည်။</span>
+                  <button type="button" class="btn btn-soft btn-sm" onclick="openAddAncInline()">+ ANC စစ်ဆေးမှုအသစ် ထည့်မည်</button>
+                </div>
+
+                <!-- Inline ANC Add Box -->
+                <div id="ancAddBox" class="sub-card" style="display:none; border-color:var(--primary);">
+                  <div class="grid-2">
+                    <div class="form-group">
+                      <label class="form-label">အကြိမ် (၁ - ၁၂)</label>
+                      <select id="ancVisitNum" class="form-select">
+                        <option value="1">၁ ကြိမ်</option><option value="2">၂ ကြိမ်</option><option value="3">၃ ကြိမ်</option>
+                        <option value="4">၄ ကြိမ်</option><option value="5">၅ ကြိမ်</option><option value="6">၆ ကြိမ်</option>
+                        <option value="7">၇ ကြိမ်</option><option value="8">၈ ကြိမ်</option><option value="9">၉ ကြိမ်</option>
+                        <option value="10">၁၀ ကြိမ်</option><option value="11">၁၁ ကြိမ်</option><option value="12">၁၂ ကြိမ်</option>
+                      </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">စစ်ဆေးရက်စွဲ</label><input type="date" id="ancDate" class="form-input" /></div>
+                  </div>
+                  <div class="grid-3">
+                    <div class="form-group"><label class="form-label">ကိုယ်ဝန်အပတ်</label><input type="number" id="ancWeeks" class="form-input" placeholder="24" /></div>
+                    <div class="form-group"><label class="form-label">အလေးချိန် (kg)</label><input type="number" step="0.1" id="ancWeight" class="form-input" placeholder="53.5" /></div>
+                    <div class="form-group"><label class="form-label">သွေးပေါင် (BP)</label><input type="text" id="ancBp" class="form-input" placeholder="120/80" /></div>
+                  </div>
+                  <div class="grid-3">
+                    <div class="form-group"><label class="form-label">သားအိမ်အမြင့် (cm)</label><input type="number" id="ancFh" class="form-input" placeholder="24" /></div>
+                    <div class="form-group"><label class="form-label">နှလုံးခုန် (FHS)</label><input type="number" id="ancFhs" class="form-input" placeholder="142" /></div>
+                    <div class="form-group">
+                      <label class="form-label">ဖောရောင်ခြင်း</label>
+                      <select id="ancEdema" class="form-select"><option value="မရှိ">မရှိ</option><option value="ရှိ">ရှိ</option></select>
+                    </div>
+                  </div>
+                  <div class="grid-2">
+                    <div class="form-group"><label class="form-label">ပေးသည့်ဆေး</label><input type="text" id="ancMeds" class="form-input" placeholder="သံဓာတ်/ဖောလစ်" /></div>
+                    <div class="form-group"><label class="form-label">နောက်ချိန်းရက်</label><input type="date" id="ancNextAppt" class="form-input" /></div>
+                  </div>
+                  <div class="grid-2">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('ancAddBox').style.display='none'">ပိတ်မည်</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="confirmAddAncVisit()">✓ ANC ထည့်မည်</button>
+                  </div>
+                </div>
+
+                <div id="ancListEl"></div>
+              </div>
+            </div>
+
+            <!-- ===== ACCORDION BUTTON 5 ===== -->
+            <div class="acc-item" id="accItem-5">
+              <button type="button" class="acc-header" onclick="toggleAccordion(5)">
+                <span class="acc-num">၅</span>
+                <span class="acc-title">မွေးဖွားစဉ် စောင့်ရှောက်မှု၊ ကာကွယ်ဆေးနှင့် ကြီးထွားမှု</span>
+                <span class="acc-chevron">▼</span>
+              </button>
+              <div class="acc-body">
+                <div class="form-label" style="color:var(--primary); margin-bottom:8px;">👶 မွေးဖွားမှု မှတ်တမ်း</div>
+                <div class="grid-2">
+                  <div class="form-group"><label class="form-label">ကလေးအမည်</label><input type="text" id="pChildName" class="form-input" placeholder="မောင်သီဟ" /></div>
+                  <div class="form-group">
+                    <label class="form-label">ကျား / မ</label>
+                    <select id="pChildGender" class="form-select">
+                      <option value="ယောက်ျားလေး">ယောက်ျားလေး</option>
+                      <option value="မိန်းကလေး">မိန်းကလေး</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="form-group"><label class="form-label">မွေးဖွားသည့်နေ့စွဲ (DOB)</label><input type="date" id="pChildDob" class="form-input" onchange="renderFormVaccines()" /></div>
+                  <div class="form-group"><label class="form-label">မွေးချိန်အလေးချိန် (kg)</label><input type="number" step="0.1" id="pBirthWeight" class="form-input" placeholder="3.2" /></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">မွေးဖွားပုံ / နေရာ</label>
+                  <input type="text" id="pDeliveryPlace" class="form-input" placeholder="ရိုးရိုးမွေး / ကျေးလက်ကျန်းမာရေးဌာန" />
+                </div>
+
+                <!-- Myanmar EPI Vaccination Auto-Tracker -->
+                <hr style="border:none; border-top:1.5px solid var(--border); margin:14px 0;" />
+                <div class="form-label" style="color:var(--primary); margin-bottom:6px;">💉 မြန်မာ EPI ကာကွယ်ဆေး အလိုအလျောက် တွက်ချက်စနစ်</div>
+                <div id="epiSummaryBanner" class="sub-card" style="background:var(--info-soft); border-color:var(--info-border); color:var(--info-text); font-weight:800; font-size:13px;"></div>
+                <div id="epiChecklistEl"></div>
+
+                <!-- Child Monthly Growth Tracking -->
+                <hr style="border:none; border-top:1.5px solid var(--border); margin:14px 0;" />
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+                  <strong style="font-size:13.5px; color:var(--primary);">⚖️ ကလေး လအလိုက် ကြီးထွားမှု</strong>
+                  <button type="button" class="btn btn-soft btn-sm" onclick="openAddChildWeightInline()">+ ကိုယ်အလေးချိန်မှတ်တမ်း ထည့်မည်</button>
+                </div>
+
+                <div id="childWeightAddBox" class="sub-card" style="display:none; border-color:var(--primary);">
+                  <div class="grid-3">
+                    <div class="form-group"><label class="form-label">အသက် (လ 0-60)</label><input type="number" id="cwMonth" class="form-input" min="0" max="60" placeholder="4" /></div>
+                    <div class="form-group"><label class="form-label">အလေးချိန် (kg)</label><input type="number" step="0.1" id="cwWeight" class="form-input" placeholder="6.2" /></div>
+                    <div class="form-group"><label class="form-label">လည်ပတ် MUAC (cm)</label><input type="number" step="0.1" id="cwMuac" class="form-input" placeholder="13.5" /></div>
+                  </div>
+                  <div class="grid-2">
+                    <div class="form-group">
+                      <label class="form-label">ဗီတာမင်အေ</label>
+                      <select id="cwVitA" class="form-select"><option value="မတိုက်ရသေး">မတိုက်ရသေး</option><option value="တိုက်ပြီး">တိုက်ပြီး</option></select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">သန်ချဆေး</label>
+                      <select id="cwDeworm" class="form-select"><option value="မတိုက်ရသေး">မတိုက်ရသေး</option><option value="တိုက်ပြီး">တိုက်ပြီး</option></select>
+                    </div>
+                  </div>
+                  <div class="grid-2">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('childWeightAddBox').style.display='none'">ပိတ်မည်</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="confirmAddChildWeight()">✓ ထည့်မည်</button>
+                  </div>
+                </div>
+
+                <div id="childWeightListEl"></div>
+              </div>
+            </div>
+
+            <!-- Sticky Clear Bottom Action Bar inside Patient Form -->
+            <div class="form-sticky-bar">
+              <button type="button" class="btn btn-outline" onclick="attemptClosePatientForm()">← စာရင်းသို့ ပြန်သွားမည်</button>
+              <button type="submit" class="btn btn-primary">💾 မှတ်တမ်း သိမ်းဆည်းမည်</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 5: ဆက်တင် (SETTINGS) ==================== -->
+      <section id="view-settings" class="tab-view">
+        <h2 class="section-heading">⚙️ ဆက်တင်နှင့် အော့ဖ်လိုင်း ဒေတာစီမံခန့်ခွဲမှု</h2>
+
+        <!-- Outbox Sync Queue (Moved here so header stays completely clean!) -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h3 class="section-heading" style="margin:0;">🔄 Outbox Sync စာရင်း</h3>
+            <span id="outboxBadgeSettings" class="badge badge-warning">0 ခု</span>
+          </div>
+          <p class="muted" style="margin-top:0;">အင်တာနက်မရှိချိန် သိမ်းဆည်းထားသော မှတ်တမ်းများကို အွန်လိုင်းပြန်ရသည့်အခါ Sync လုပ်နိုင်ပါသည်။</p>
+          <div id="outboxListEl" style="margin-bottom:10px;"></div>
+          <button type="button" class="btn btn-primary btn-block" onclick="manualSyncOutbox()">🔄 ယခု Sync ပြုလုပ်မည်</button>
+        </div>
+
+        <!-- Backup Export / Import -->
+        <div class="card">
+          <h3 class="section-heading">💾 LocalStorage JSON Backup</h3>
+          <p class="muted" style="margin-top:0;">မှတ်တမ်းအားလုံးကို JSON ဖိုင်အဖြစ် သိမ်းဆည်း/ပြန်လည်ထည့်သွင်းနိုင်ပါသည်။</p>
+          <div class="grid-2">
+            <button type="button" class="btn btn-soft" onclick="exportJsonBackup()">⬇️ JSON ထုတ်မည်</button>
+            <label class="btn btn-outline" style="margin:0;">
+              ⬆️ JSON ပြန်သွင်း
+              <input type="file" accept=".json" style="display:none;" onchange="importJsonBackup(event)" />
+            </label>
+          </div>
+        </div>
+
+        <!-- 4-Digit Offline PIN Lock -->
+        <div class="card">
+          <h3 class="section-heading">🔐 လုံခြုံရေး (4-Digit Offline PIN)</h3>
+          <div class="switch-row">
+            <div>
+              <div style="font-weight:800;">PIN Lock ဖွင့်ထားမည်</div>
+              <div class="muted" id="pinStatusText">ပိတ်ထားသည်</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="pinToggleSwitch" onchange="onTogglePinSwitch(this.checked)" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="pinActionsRow" class="grid-2" style="display:none; margin-top:10px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="openSetPinModal()">🔑 PIN ပြောင်းမည်</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="lockAppScreen()">🔒 ယခု လော့ခ်ချမည်</button>
+          </div>
+        </div>
+
+        <!-- Reset Sample Data -->
+        <div class="card">
+          <h3 class="section-heading">♻️ စမ်းသပ်ဒေတာ ပြန်လည်စတင်ရန်</h3>
+          <p class="muted" style="margin-top:0;">နမူနာလူနာ (MCH-0001 - ဒေါ်အေးအေး) နှင့် ဆက်စပ်မှတ်တမ်းများကို မူလအတိုင်း ပြန်လည်ထည့်သွင်းပါမည်။</p>
+          <button type="button" class="btn btn-danger btn-block" onclick="confirmResetSampleData()">♻️ Reset Sample Data</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- 4. BOTTOM 5-TAB NAVIGATION BAR -->
+    <nav class="bottom-nav" aria-label="ပင်မလမ်းညွှန်">
+      <button type="button" class="nav-item active" id="nav-home" onclick="switchTab('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>ပင်မ</span>
+      </button>
+      <button type="button" class="nav-item" id="nav-guides" onclick="switchTab('guides')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>ဗဟုသုတ</span>
+      </button>
+      <button type="button" class="nav-item" id="nav-tools" onclick="switchTab('tools')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span>ကိရိယာ</span>
+      </button>
+      <button type="button" class="nav-item" id="nav-records" onclick="switchTab('records')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>မှတ်တမ်း</span>
+      </button>
+      <button type="button" class="nav-item" id="nav-settings" onclick="switchTab('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>ဆက်တင်</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- 5. DEDICATED FULL-SCREEN NOTIFICATION BELL DRAWER -->
+  <div id="notiDrawer" class="drawer-overlay" role="dialog" aria-label="သတိပေးချက်များ">
+    <div class="drawer-top">
+      <h2 style="margin:0; font-size:16px; font-weight:800;">🔔 သတိပေးချက်များ (Notifications)</h2>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn btn-soft btn-sm" onclick="markAllNotisRead()">✓ အားလုံးဖတ်ပြီး</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeNotiDrawer()">✕ ပိတ်</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div class="pill-row">
+        <button type="button" class="pill-btn active" id="nFilter-all" onclick="setNotiFilter('all')">အားလုံး</button>
+        <button type="button" class="pill-btn" id="nFilter-weight" onclick="setNotiFilter('weight')">အလေးချိန်ကျ 🚨</button>
+        <button type="button" class="pill-btn" id="nFilter-vaccine" onclick="setNotiFilter('vaccine')">ကာကွယ်ဆေး 💉</button>
+        <button type="button" class="pill-btn" id="nFilter-appt" onclick="setNotiFilter('appt')">ရက်ချိန်း 📅</button>
+      </div>
+      <div id="notiDrawerList"></div>
+    </div>
+  </div>
+
+  <!-- 6. SHARED MODAL DIALOG (No alert/confirm ever used) -->
+  <div id="modalBackdrop" class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalTitle" style="margin:0; font-size:15.5px; font-weight:800;">ခေါင်းစဉ်</h3>
+        <button type="button" class="btn btn-outline btn-sm" style="min-height:38px;" onclick="closeModal()">✕ ပိတ်</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- 7. TOAST NOTIFICATIONS -->
+  <div id="toastWrap" class="toast-wrap"></div>
+
+  <!-- 8. 4-DIGIT OFFLINE PIN LOCK SCREEN -->
+  <div id="pinOverlay" class="pin-overlay">
+    <h2 style="margin:0; color:var(--primary-dark);">🔒 MCH Care လော့ခ်ဖွင့်ရန်</h2>
+    <p class="muted" id="pinPromptText">ဂဏန်း ၄ လုံး PIN ရိုက်ထည့်ပါ</p>
+    <div class="pin-dots" id="pinDotsWrap">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    <div class="pin-pad">
+      <button type="button" class="pin-key" onclick="enterPinDigit('1')">1</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('2')">2</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('3')">3</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('4')">4</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('5')">5</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('6')">6</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('7')">7</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('8')">8</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('9')">9</button>
+      <button type="button" class="pin-key" style="font-size:14px;" onclick="clearPinDigits()">ရှင်း</button>
+      <button type="button" class="pin-key" onclick="enterPinDigit('0')">0</button>
+      <button type="button" class="pin-key" onclick="backspacePinDigit()">⌫</button>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    /* ==========================================================================
+       1. STATIC CLINICAL DATA (MYANMAR MCH RECORD BOOK 9 CHAPTERS, EPI, WHO, FETAL SIZE)
+       ========================================================================== */
+    const HISTORY_CONDITIONS = [
+      "သွေးတိုး", "ဆီးချို", "နှလုံးရောဂါ", "တီဘီ", "ပန်းနာရင်ကျပ်",
+      "အတက်ရောဂါ", "ကျောက်ကပ်ရောဂါ", "သွေးအားနည်း", "ခွဲစိတ်ဖူးခြင်း", "ဆေးမတည့်ခြင်း"
+    ];
+
+    const EPI_STAGES = [
+      { key: "birth", label: "မွေးကင်းစ", days: 0, detail: "BCG + အသည်းရောင်အသားဝါ B" },
+      { key: "2m", label: "အသက် (၂) လ", days: 60, detail: "ငါးမျိုးစပ် ၁ + PCV ၁ + ပိုလီယို ၁" },
+      { key: "4m", label: "အသက် (၄) လ", days: 120, detail: "ငါးမျိုးစပ် ၂ + PCV ၂ + ပိုလီယို ၂ + ထိုးဆေး IPV" },
+      { key: "6m", label: "အသက် (၆) လ", days: 180, detail: "ငါးမျိုးစပ် ၃ + PCV ၃ + ပိုလီယို ၃" },
+      { key: "9m", label: "အသက် (၉) လ", days: 270, detail: "ဝက်သက်ဂျိုက်သိုး MR ၁" },
+      { key: "18m", label: "အသက် (၁၈) လ", days: 540, detail: "ဝက်သက် MR ၂" }
+    ];
+
+    /* Fetal Size Analogy + Length/Weight for Every Week 4-42 */
+    const FETAL_SIZE_MAP = {
+      4: "ဘိန်းစေ့ခန့် (0.2 cm / 1 g အောက်)",
+      5: "နှမ်းစေ့ခန့် (0.3 cm / 1 g အောက်)",
+      6: "ပဲနီလေးစေ့ခန့် (0.6 cm / 1 g အောက်)",
+      7: "ဘလူးဘယ်ရီသီးခန့် (1.3 cm / 1 g)",
+      8: "ပဲတောင့်ရှည်စေ့ခန့် (1.6 cm / 1 g)",
+      9: "စပျစ်သီးတစ်လုံးခန့် (2.3 cm / 2 g)",
+      10: "ဇီးသီးသေးခန့် (3.1 cm / 4 g)",
+      11: "သဖန်းသီးခန့် (4.1 cm / 7 g)",
+      12: "သံပရာသီးခန့် (5.4 cm / 14 g)",
+      13: "ပဲသီးတောင့်ခန့် (7.4 cm / 23 g)",
+      14: "ရှောက်သီးငယ်ခန့် (8.7 cm / 43 g)",
+      15: "ပန်းသီးတစ်လုံးခန့် (10.1 cm / 70 g)",
+      16: "ထောပတ်သီးတစ်လုံးခန့် (11.6 cm / 100 g)",
+      17: "မုန်လာဥခန့် (13.0 cm / 140 g)",
+      18: "ငရုတ်ပွသီးခန့် (14.2 cm / 190 g)",
+      19: "ခရမ်းချဉ်သီးကြီးခန့် (15.3 cm / 240 g)",
+      20: "ငှက်ပျောသီးတစ်လုံးခန့် (25.6 cm / 300 g)",
+      21: "မုန်လာဥနီတစ်တောင့်ခန့် (26.7 cm / 360 g)",
+      22: "သင်္ဘောသီးငယ်ခန့် (27.8 cm / 430 g)",
+      23: "သရက်သီးကြီးခန့် (28.9 cm / 500 g)",
+      24: "ပြောင်းဖူးတစ်ဖူးခန့် (30.0 cm / 600 g)",
+      25: "ပန်းဂေါ်ဖီတစ်ပွင့်ခန့် (34.6 cm / 660 g)",
+      26: "ကြက်သွန်မြိတ်စည်းခန့် (35.6 cm / 760 g)",
+      27: "ဂေါ်ဖီထုပ်ငယ်ခန့် (36.6 cm / 875 g)",
+      28: "ခရမ်းသီးကြီးတစ်လုံးခန့် (37.6 cm / 1,000 g)",
+      29: "ဖရုံသီးငယ်ခန့် (38.6 cm / 1,150 g)",
+      30: "ဂေါ်ဖီထုပ်ကြီးတစ်ထုပ်ခန့် (39.9 cm / 1,300 g)",
+      31: "အုန်းသီးတစ်လုံးခန့် (41.1 cm / 1,500 g)",
+      32: "ကိုက်လန်ထုပ်ကြီးခန့် (42.4 cm / 1,700 g)",
+      33: "နာနတ်သီးတစ်လုံးခန့် (43.7 cm / 1,900 g)",
+      34: "သခွားမွှေးသီးခန့် (45.0 cm / 2,150 g)",
+      35: "ပိန္နဲသီးငယ်ခန့် (46.2 cm / 2,400 g)",
+      36: "သင်္ဘောသီးကြီးတစ်လုံးခန့် (47.4 cm / 2,600 g)",
+      37: "ကျောက်ဖရုံသီးငယ်ခန့် (48.6 cm / 2,850 g)",
+      38: "ဖရဲသီးငယ်ခန့် (49.8 cm / 3,100 g)",
+      39: "ဖရဲသီးအလတ်စားခန့် (50.7 cm / 3,300 g)",
+      40: "ဖရဲသီးကြီးတစ်လုံးခန့် (51.2 cm / 3,450 g)",
+      41: "ဖရဲသီးကြီးခန့် (51.7 cm / 3,600 g)",
+      42: "ဖရဲသီးကြီးခန့် (51.5 cm / 3,700 g)"
+    };
+
+    /* WHO Weight-for-Age Reference Curves (0-60 months, 2-20 kg scale) */
+    const WHO_BOY_REF = [
+      { m: 0, red: 2.1, yel: 2.5, med: 3.3 },
+      { m: 6, red: 5.7, yel: 6.4, med: 7.9 },
+      { m: 12, red: 6.9, yel: 7.7, med: 9.6 },
+      { m: 24, red: 8.6, yel: 9.7, med: 12.2 },
+      { m: 36, red: 10.0, yel: 11.3, med: 14.3 },
+      { m: 48, red: 11.2, yel: 12.7, med: 16.3 },
+      { m: 60, red: 12.4, yel: 14.1, med: 18.3 }
+    ];
+
+    const WHO_GIRL_REF = [
+      { m: 0, red: 2.0, yel: 2.4, med: 3.2 },
+      { m: 6, red: 5.1, yel: 5.7, med: 7.3 },
+      { m: 12, red: 6.3, yel: 7.0, med: 8.9 },
+      { m: 24, red: 8.1, yel: 9.0, med: 11.5 },
+      { m: 36, red: 9.6, yel: 10.8, med: 13.9 },
+      { m: 48, red: 10.9, yel: 12.3, med: 16.1 },
+      { m: 60, red: 12.1, yel: 13.7, med: 18.2 }
+    ];
+
+    /* ALL 9 Complete Chapters from Myanmar MCH Record Book */
+    const KNOWLEDGE_CHAPTERS = [
+      {
+        id: "preg-care",
+        cat: "pregnancy",
+        icon: "🤰",
+        title: "၁။ ကိုယ်ဝန်ဆောင်မိခင်များ လိုက်နာဆောင်ရွက်ရန် (၁၀ ချက်) နှင့် စစ်ဆေးမှု (၄ ကြိမ်)",
+        summary: "လိုက်နာရန် ၁၀ ချက်၊ ပထမ/ဒုတိယ/တတိယ/စတုတ္ထအကြိမ် စစ်ဆေးမှုနှင့် ထိုးဆေး/သောက်ဆေး ၄ မျိုး",
+        html: `
+          <h4>📋 ကိုယ်ဝန်ဆောင်မိခင်များ လိုက်နာဆောင်ရွက်ရန် (၁၀) ချက်</h4>
+          <ol>
+            <li>ရာသီကျော်၍ ကိုယ်ဝန်ရှိသည်ဟု သံသယရှိလျှင်လျှင်ချင်း နီးစပ်ရာဆေးရုံ/ဆေးခန်း/ကျန်းမာရေးဌာနများတွင် ကိုယ်ဝန်အပ်ပါ။</li>
+            <li>ကိုယ်ဝန်စောင့်ရှောက်မှုကို ကျွမ်းကျင်သူထံတွင် အနည်းဆုံး <strong>(၄) ကြိမ်</strong> ခံယူပါ။</li>
+            <li>ကိုယ်ဝန်ဆောင်မိခင်များ အာဟာရပြည့်ဝမျှတရန် အစားမရှောင်ပါနှင့်။ ကိုယ်ဝန်ဆောင်စဉ် အစာပိုစားပါ။ အစားအစာ/ရေသန့်ရှင်းရေး ပိုဂရုစိုက်ပါ။</li>
+            <li>တတ်ကျွမ်းသော ကျန်းမာရေးစောင့်ရှောက်မှုပေးသူမှ ညွှန်ကြားသောဆေးဝါးမှအပ အခြားဆေးများ မသောက်ပါနှင့်။</li>
+            <li>နေ့စဉ်သင့်တော်သော ကိုယ်လက်လှုပ်ရှားမှု အသင့်အတင့် ပြုလုပ်ပါ။ အိပ်ရေးဝအောင်အိပ်ပါ။ နေ့လည်ပိုင်းတွင် အနားယူပါ။ အလေးအပင်မသောအလုပ်များ မပြုလုပ်ပါနှင့်။</li>
+            <li>သန့်ရှင်းပေါ့ပါးချောင်ချိ၍ ရာသီဥတုနှင့်ကိုက်ညီသော အဝတ်အစားများကို ဝတ်ဆင်ပါ။</li>
+            <li>ဆေးလိပ်၊ အရက်မသောက်ပါနှင့်။ ကွမ်းမစားပါနှင့်။ ဆေးလိပ်ငွေ့၊ မီးခိုးငွေ့ အစရှိသည့် ညစ်ညမ်းသော လေထုပတ်ဝန်းကျင်မှ ရှောင်ရှားပါ။</li>
+            <li>ငှက်ဖျားနှင့် သွေးလွန်တုပ်ကွေးရောဂါ ကာကွယ်နိုင်ရန်အတွက် ဘယ်အချိန်အိပ်အိပ် ဆေးစိမ်ခြင်ထောင်ဖြင့် အိပ်ပါ။</li>
+            <li>နေမကောင်းဖြစ်ပါက နီးစပ်ရာဆေးရုံ/ဆေးခန်း/ကျန်းမာရေးဌာနများသို့ အမြန်ဆုံးသွားရောက်၍ ဆေးကုသမှုခံယူပါ။</li>
+            <li>မွေးဖွားရန်ကြိုတင် အစီအစဉ် ရေးဆွဲခြင်း။</li>
+          </ol>
+
+          <h4>🏥 ကိုယ်ဝန်သွားပြသည့်အခါ ဆောင်ရွက်ပေးမည့် အချက်များ</h4>
+          <ul>
+            <li><strong>ပထမအကြိမ် (ကိုယ်ဝန် ၄ လ အတွင်း) စောနိုင်သမျှစောစော:</strong> ကိုယ်ဝန်ရာဇဝင်မေးခြင်း၊ အထွေထွေကျန်းမာရေးစစ်ဆေးခြင်း၊ သွေးပေါင်ချိန်ခြင်း၊ ကိုယ်အလေးချိန်ခြင်း၊ သွေးအားနည်းစစ်ဆေးခြင်း၊ ဆီးစစ်ခြင်း၊ ဆစ်ဖလစ်သွေးစစ်ခြင်း၊ တီဘီလက္ခဏာမေးမြန်းခြင်း၊ HIV ပိုးကူးစက်ခြင်းဆိုင်ရာ ဗဟုသုတပေးခြင်း၊ မေးခိုင်ကာကွယ်ဆေး (ပထမအကြိမ်) ထိုးခြင်း၊ သံဓာတ်ဖောလစ်အားဆေး နေ့စဉ်သောက်ရန်ပေးခြင်း၊ ကျန်းမာရေးပညာပေးခြင်းနှင့် အန္တရာယ်လက္ခဏာများ အသိပေးခြင်း။</li>
+            <li><strong>ဒုတိယအကြိမ် (ကိုယ်ဝန် ၆ - ၇ လ အတွင်း):</strong> သွေးပေါင်ချိန်ခြင်း၊ ကိုယ်အလေးချိန်ခြင်း၊ ကိုယ်ဝန်စမ်းသပ်ခြင်း၊ ဆီးစစ်ခြင်း၊ သန်ချဆေးပြား တစ်ကြိမ်သောက်ရန်ပေးခြင်း၊ သံဓာတ်ဖောလစ်အားဆေးပေးခြင်း၊ မေးခိုင်ကာကွယ်ဆေး (ဒုတိယအကြိမ်) ထိုးပေးခြင်း။</li>
+            <li><strong>တတိယအကြိမ် (ကိုယ်ဝန် ၈ လ တွင်):</strong> သွေးပေါင်ချိန်ခြင်း၊ ကိုယ်အလေးချိန်ခြင်း၊ ကိုယ်ဝန်စမ်းသပ်ခြင်း၊ ဆီးစစ်ခြင်း၊ သွေးအားနည်းသွေးစစ်ခြင်း၊ သံဓာတ်ဖောလစ်အားဆေးပေးခြင်း၊ ဆစ်ဖလစ်သွေးစစ်ခြင်း၊ တီဘီလက္ခဏာမေးမြန်းခြင်း။</li>
+            <li><strong>စတုတ္ထအကြိမ် (ကိုယ်ဝန် ၉ လ တွင်):</strong> သွေးပေါင်ချိန်ခြင်း၊ ကိုယ်အလေးချိန်ခြင်း၊ ကိုယ်ဝန်စမ်းသပ်ခြင်း၊ ဆီးစစ်ခြင်း၊ သံဓာတ်ဖောလစ်အားဆေးနှင့် ဗီတာမင်ဘီဝမ်း ဆေးပြားပေးခြင်း၊ မွေးဖွားခါနီးလက္ခဏာများ အသိပေးခြင်း၊ မွေးဖွားမည့် ခန့်မှန်းရက်ထက် တစ်ပတ်ကျော်ပါက ကျန်းမာရေးဌာနသို့ သွားရောက်ပြသရန် အကြံပြုခြင်း။</li>
+          </ul>
+
+          <h4>💊 ကိုယ်ဝန်ဆောင်စဉ် ထိုးရမည့် / သောက်ရမည့် ဆေး (၄) မျိုး</h4>
+          <ul>
+            <li>မေးခိုင်ကာကွယ်ဆေး အနည်းဆုံး <strong>(၂) ကြိမ်</strong> ထိုးပါ။</li>
+            <li>သံဓာတ်၊ ဖောလစ် ကိုယ်ဝန်ဆောင်အားဆေး နေ့စဉ်မှန်မှန် သောက်ပါ။</li>
+            <li>ကိုယ်ဝန် <strong>(၄) လကျော်လျှင် သန်ချဆေးတစ်ကြိမ်</strong> သောက်ပါ။</li>
+            <li>ကလေးမမွေးခင် <strong>(၁) လမှ မွေးဖွားပြီး (၃) လအထိ ဗီတာမင်ဘီဝမ်း</strong> ကို ညွှန်ကြားသည့်အတိုင်း သောက်ပါ။</li>
+          </ul>
+        `
+      },
+      {
+        id: "nutrition",
+        cat: "pregnancy",
+        icon: "🥗",
+        title: "၂။ အာဟာရ၊ သံဓာတ်နှင့် ဖောလစ်အက်ဆစ်",
+        summary: "မိခင်နှင့်ကလေး ကျန်းမာဖွံ့ဖြိုးစေမည့် အစာအုပ်စု (၃) မျိုးနှင့် သံဓာတ်သောက်သုံးနည်း",
+        html: `
+          <h4>🍽️ အစာအုပ်စု (၃) မျိုး စုံလင်စွာ စားသုံးပါ</h4>
+          <ul>
+            <li><strong>အင်အားဖြစ်စေသော အစာ:</strong> ထမင်း၊ ဂျုံ၊ ပြောင်း၊ အာလူး၊ ကန်စွန်းဥ၊ ဆီ (ပုံမှန်ထက် တစ်နေ့တစ်နပ် ပိုစားပါ)။</li>
+            <li><strong>ခန္ဓာကိုယ်ကြီးထွားစေသော အစာ:</strong> အသား၊ ငါး၊ အသည်း၊ ကြက်ဥ/ဘဲဥ၊ ပဲအမျိုးမျိုး၊ နို့နှင့် နို့ထွက်ပစ္စည်းများ။</li>
+            <li><strong>ရောဂါကာကွယ်သော အစာ:</strong> ကန်စွန်းရွက်၊ ဟင်းနုနွယ်၊ ဒန့်သလွန်ရွက်၊ ချဉ်ပေါင်ရွက်၊ သင်္ဘောသီးမှည့်၊ လိမ္မော်သီး၊ ငှက်ပျောသီး။</li>
+          </ul>
+          <h4>💊 သံဓာတ်နှင့် ဖောလစ်အက်ဆစ် သောက်သုံးနည်း</h4>
+          <ul>
+            <li>နေ့စဉ် ၁ ပြား ပုံမှန်သောက်ပါ (သွေးအားနည်းခြင်းနှင့် ကလေးဦးနှောက်/ကျောရိုးချို့ယွင်းမှုကို ကာကွယ်သည်)။</li>
+            <li>သံဓာတ်စုပ်ယူမှု ကောင်းစေရန် သံပရာရည်/လိမ္မော်သီးကဲ့သို့ ဗီတာမင်စီ ပါသော အသီးများနှင့် တွဲစားနိုင်သည်။</li>
+            <li>သံဓာတ်ဆေးသောက်ပြီး ၂ နာရီအတွင်း လက်ဖက်ရည်၊ ကော်ဖီ၊ လက်ဖက်သုပ်များ မစားသောက်ပါနှင့်။</li>
+          </ul>
+        `
+      },
+      {
+        id: "danger-signs",
+        cat: "danger",
+        icon: "🚨",
+        title: "၃။ အန္တရာယ်လက္ခဏာများ အပြည့်အစုံ (ကိုယ်ဝန်ဆောင်၊ မွေးဖွားစဉ်၊ မီးတွင်း၊ မွေးကင်းစ)",
+        summary: "နေ့ညမဆိုင်း ချက်ချင်းဆေးရုံပြသရမည့် အရေးပေါ် လက္ခဏာများနှင့် ရှေ့ပြေးလက္ခဏာများ",
+        html: `
+          <div class="sub-card" style="background:var(--danger-soft); border-color:var(--danger); color:var(--danger-text);">
+            <strong>🚨 ကိုယ်ဝန်ဆောင်မိခင်များ (နေ့ညမဆိုင်း ချက်ချင်းပြပါ - ၆ ချက်)</strong>
+            <ol>
+              <li>မိန်းမကိုယ်မှ သွေးဆင်းခြင်း၊ တက်ခြင်း၊ သတိလစ်ခြင်း</li>
+              <li>ခေါင်းပြင်းထန်စွာကိုက်ပြီး အမြင်မှုန်ဝါးခြင်း</li>
+              <li>အန်ခြင်း၊ ရင်ညွန့်(သို့)ညာဘက်နံရိုးအောက် အောင့်ခြင်း</li>
+              <li>ဝမ်းဗိုက် အလွန်အမင်း ဆက်တိုက်နာခြင်း</li>
+              <li>ဖျားပြီး အိပ်ရာမှမထနိုင်လောက်အောင် အားနည်းခြင်း</li>
+              <li>အသက်ရှူမြန်ခြင်း၊ အသက်ရှူခက်ခြင်း</li>
+            </ol>
+            <strong>အမြန်ဆုံး သွားပြရန် (၇ ချက်):</strong> မျက်နှာ/လက်/ခြေ ဖောယောင်လျှင်၊ ဆီးသွားနည်းလျှင်၊ ဆက်တိုက်ပြင်းထန်စွာအန်လျှင်၊ ဖျားလျှင်၊ နေမကောင်းဖြစ်လျှင်၊ ဗိုက်နာလျှင်၊ ကလေးလှုပ်ရှားမှု လျော့နည်း/မရှိလျှင်။
+          </div>
+
+          <h4>🌸 မွေးဖွားခါနီး ရှေ့ပြေးလက္ခဏာများ (၃ ချက် — ဆေးရုံ/သားဖွားဆရာမ ခေါ်ပါ)</h4>
+          <ol>
+            <li>ပေါင်ခြံဆင်းလျှင် (ပန်းရောင်သွေးစွန်းသော သို့မဟုတ် အရောင်မဲ့ချွဲဆင်းလျှင်)</li>
+            <li>၂၀ မိနစ်(သို့) ၂၀ မိနစ်အောက်တစ်ခါ ဗိုက်နာလျှင်</li>
+            <li>ရေမွှာပေါက်လျှင်၊ ရေဆင်းလျှင်</li>
+          </ol>
+
+          <h4>🏥 မွေးဖွားစဉ် အန္တရာယ်လက္ခဏာများ</h4>
+          <ul>
+            <li><strong>မိခင် (၄ ချက်):</strong> (၁) ရေမွှာပေါက်ပြီး (၆)နာရီကြာသည်တိုင်အောင် ဗိုက်မနာလျှင်၊ (၂) ဗိုက်နာခြင်း (၁၂)နာရီကျော်သည်အထိ မမွေးသေးလျှင်၊ (၃) မွေးပြီးသွေးများဆင်းလျှင် (သို့) (၅)မိနစ်အတွင်း အောက်ခံအဝတ်တွင် သွေးရွှဲစိုနေလျှင်၊ (၄) ကလေးထွက်ပြီး (၁)နာရီကြာသည်အထိ အချင်းမကျလျှင်။</li>
+            <li><strong>ကလေး (၂ ချက်):</strong> (၁) အလွန်သေးလျှင်၊ (၂) အသက်ရှူခက်လျှင်။</li>
+          </ul>
+
+          <h4>🤱 မွေးဖွားပြီးစ မိခင်များအတွက် အန္တရာယ်လက္ခဏာများ</h4>
+          <ul>
+            <li><strong>နေ့ညမဆိုင်း ချက်ချင်းပြပါ (၅ ချက်):</strong> သွေးဆင်းများလျှင်၊ ခေါင်းအလွန်ကိုက်ပြီး အမြင်မှုန်ဝါးလျှင်၊ တက်လျှင်၊ အသက်ရှူမြန်/ခက်ခဲလျှင်၊ ဖျားပြီး အိပ်ရာမှမထနိုင်လောက်အောင် အားနည်းလျှင်။</li>
+            <li><strong>ချက်ချင်းသွားပြပါ (၄ ချက်):</strong> သားမြတ်(သို့) နို့သီးခေါင်းရောင်ခြင်း/နီခြင်း/ထိလျှင်နာခြင်း၊ ဆီးသွားရခက်/ဆီးထွက်ကျခြင်း၊ မိန်းမကိုယ်နောက်ပိုင်း ပို၍ရောင်ရမ်းနာကျင်လာခြင်း၊ မိန်းမကိုယ်မှ အနံ့ရှိသောအရည်များ ဆင်းခြင်း။</li>
+          </ul>
+
+          <h4>👶 မွေးကင်းစကလေးငယ်များ၏ အန္တရာယ်လက္ခဏာများ</h4>
+          <ul>
+            <li><strong>နေ့ညမဆိုင်း ချက်ချင်းပြသပါ (၆ ချက်):</strong> အသက်ရှူခက်ခဲနေလျှင်၊ အသက်ရှူစဉ် ရင်ဘတ်အောက်ချိုင့်ဝင်လျှင်၊ တက်လျှင်၊ နို့လုံးဝမစို့လျှင်၊ ဖျားလျှင်(သို့) ကိုယ်အေးစက်နေလျှင်၊ ချက်မှ သွေးထွက်လျှင်။</li>
+            <li><strong>အမြန်ဆုံးသွားပြပါ (၇ ချက်):</strong> ကလေးအလွန်သေးငယ်လျှင်၊ နို့တိုက်ရခက်ခဲလျှင်(သို့) ၂၄ နာရီအတွင်း နို့စို့မှု (၅)ကြိမ်အောက်နည်းလျှင်၊ အရေပြားပေါ် ပြည်ဖုပေါက်လျှင်၊ ချက်တိုင်ငုတ် နီမြန်း/ပြည်ထွက်နေလျှင်၊ မျက်စိမှပြည်ထွက်လျှင်၊ အသားဝါလျှင်၊ ဖြူဖျော့လျှင်။</li>
+          </ul>
+        `
+      },
+      {
+        id: "vaccines",
+        cat: "child",
+        icon: "💉",
+        title: "၄။ ကာကွယ်ဆေး အချိန်ဇယား (Myanmar EPI)",
+        summary: "မွေးကင်းစ၊ ၂လ၊ ၄လ၊ ၆လ၊ ၉လ နှင့် ၁၈လ ကလေးကာကွယ်ဆေး လမ်းညွှန်အသေးစိတ်",
+        html: `
+          <p>ကာကွယ်ဆေးထိုးပြီးနောက် အနည်းငယ်ဖျားခြင်း၊ ဆေးထိုးသည့်နေရာ အနည်းငယ်နီပြီးရောင်ခြင်း ဖြစ်တတ်သော်လည်း စိုးရိမ်ရန်မလိုပါ။ တစ်နှစ်အောက်ကလေး ကာကွယ်ဆေးမထိုးရသေးလျှင် သားဖွားဆရာမထံ ချက်ချင်းပြသပါ။</p>
+          <table class="data-table">
+            <tr><th>အသက်အရွယ်</th><th>ထိုးရမည့် / တိုက်ရမည့် ကာကွယ်ဆေးများ</th></tr>
+            <tr><td><strong>မွေးကင်းစ</strong></td><td>ဘီစီဂျီ (BCG - ကလေးတီဘီ) နှင့် အသည်းရောင်အသားဝါ(ဘီ)။ <em>(မွေးကင်းစတွင် BCG မထိုးဖြစ်ပါက အသက် ၂ လအတွင်း ထိုးပေးပါ)</em></td></tr>
+            <tr><td><strong>အသက် (၂) လ</strong></td><td>ငါးမျိုးစပ်ကာကွယ်ဆေး (၁)၊ ပြင်းထန်အဆုတ်ရောင် PCV (၁)၊ ပိုလီယိုအစက်ချ (၁)</td></tr>
+            <tr><td><strong>အသက် (၄) လ</strong></td><td>ငါးမျိုးစပ်ကာကွယ်ဆေး (၂)၊ ပြင်းထန်အဆုတ်ရောင် PCV (၂)၊ ပိုလီယိုအစက်ချ (၂)၊ ပိုလီယိုထိုးဆေး (IPV)</td></tr>
+            <tr><td><strong>အသက် (၆) လ</strong></td><td>ငါးမျိုးစပ်ကာကွယ်ဆေး (၃)၊ ပြင်းထန်အဆုတ်ရောင် PCV (၃)၊ ပိုလီယိုအစက်ချ (၃)</td></tr>
+            <tr><td><strong>အသက် (၉) လ</strong></td><td>ဝက်သက်ဂျိုက်သိုးရောဂါကာကွယ်ဆေး (MR ၁)</td></tr>
+            <tr><td><strong>အသက် (၁၈) လ</strong></td><td>ဝက်သက်ရောဂါကာကွယ်ဆေး ဒုတိယအကြိမ် (MR ၂)</td></tr>
+          </table>
+        `
+      },
+      {
+        id: "postpartum",
+        cat: "child",
+        icon: "🤱",
+        title: "၅။ မွေးဖွားပြီး စောင့်ရှောက်မှု (Postpartum — လိုက်နာရမည့် ၁၂ ချက်)",
+        summary: "မီးတွင်းကာလ ၄၂ ရက်အတွင်း သန့်ရှင်းရေး၊ အာဟာရ၊ အားဆေးနှင့် သားဆက်ခြားရေး",
+        html: `
+          <h4>🌸 မွေးဖွားပြီးစဉ် လိုက်နာရမည့် အချက် (၁၂) ချက်</h4>
+          <ol>
+            <li>တစ်ကိုယ်ရေ သန့်ရှင်းရေး ဂရုစိုက်ပါ။</li>
+            <li>မိန်းမကိုယ်မှ အရည်များဆင်းသည့်အတွက် သန့်ရှင်းသောအဝတ် (သို့) အမျိုးသမီး လစဉ်သုံးပစ္စည်း သုံးပါ။</li>
+            <li>မိန်းမကိုယ်အား သန့်ရှင်းစွာ ထားပါ။ အိမ်သာတက်ပြီးတိုင်း ရေဖြင့်ဆေးပါ။</li>
+            <li>နို့တိုက်မိခင်များ အစားမရှောင်ပါနှင့်။ ကိုယ်ဝန်ဆောင်စဉ်ကထက် ပိုစားပါ။</li>
+            <li>တတ်ကျွမ်းသော ကျန်းမာရေးစောင့်ရှောက်မှုပေးသူများက ညွှန်ကြားသည့်အတိုင်း ဆေးများကို သောက်ပါ။</li>
+            <li>သံဓာတ်၊ ဖောလစ်၊ ဗီတာမင်ဘီဝမ်းဆေးများ ဆက်လက်သောက်ပါ။</li>
+            <li>အင်အားပြည့် ဗီတာမင်အေ အားဆေး တစ်ကြိမ် သောက်ပါ။</li>
+            <li>မွေးဖွားပြီး လေ့ကျင့်ခန်း အနည်းငယ် ပြုလုပ်ပါ။</li>
+            <li>မိန်းမကိုယ်အတွင်းသို့ မည်သည့်အရာမျှ မထည့်ပါနှင့်။</li>
+            <li>မွေးဖွားပြီး <strong>(၄၂) ရက် (ရက်သတ္တပတ် ၆ ပတ်)</strong> အတွင်း လိင်ဆက်ဆံခြင်း မပြုသင့်ပါ။</li>
+            <li>မွေးဖွားပြီး (၄၂) ရက် ပြည့်လျှင် သားဆက်ခြားရန် ကျန်းမာရေးစောင့်ရှောက်မှုပေးသူနှင့် တိုင်ပင်ဆွေးနွေးကာ ရွေးချယ် အသုံးပြုပါ။</li>
+            <li>ကိုယ်ဝန်တစ်ကြိမ်နှင့်တစ်ကြိမ် အနည်းဆုံး <strong>(၂) နှစ်ခြားခြင်း</strong>သည် မိခင်နှင့်ကလေးတို့၏ ကျန်းမာရေးအတွက် အသင့်လျော်ဆုံး ဖြစ်သည်။</li>
+          </ol>
+        `
+      },
+      {
+        id: "newborn-care",
+        cat: "child",
+        icon: "👶",
+        title: "၆။ မွေးကင်းစကလေး ပြုစုနည်းနှင့် အဖြစ်များသော ရောဂါ (၇) မျိုး",
+        summary: "မျက်ဝတ်၊ မျက်စိပြည်၊ ချက်စို (၇.၁% ကလိုဟက်ဇဒင်း)၊ ချက်ပြည်၊ ပြည်တည်နာ၊ အသားဝါ၊ ဖျားခြင်း",
+        html: `
+          <p>ကလေးငယ်ကို မကိုင်တွယ်မီ လက်ကို သန့်ရှင်းသောရေ၊ ဆပ်ပြာတို့ဖြင့် စင်ကြယ်အောင် ဆေးကြောပါ။</p>
+          <table class="data-table">
+            <tr><th>စဉ်</th><th>ရောဂါ</th><th>လုပ်ဆောင်ပေးရန်</th></tr>
+            <tr><td>၁</td><td>မျက်ဝတ်ထွက်ခြင်း</td><td>သန့်ရှင်းခြောက်သွေ့သော သီးသန့်အဝတ် (သို့) ပုဝါဖြင့် မျက်လုံးကို သန့်စင်ပေးပါ။ (ရေကျက်အေးကို အသုံးပြုနိုင်ပါသည်)</td></tr>
+            <tr><td>၂</td><td>မျက်စိရောင်ရမ်း၍ ပြည်ထွက်ခြင်း</td><td>မျက်လုံးထဲမှ ပြည်များကို အဝတ်စိုကိုသုံး၍ အသာအယာဖယ်ရှားပေးပါ။ ဆေးရုံဆေးခန်းသို့ အမြန်ဆုံးပြသပါ။</td></tr>
+            <tr><td>၃</td><td>ချက်စိုခြင်း</td><td>ချက်သည် ပုံမှန်အားဖြင့် တစ်ပတ်အတွင်း ခြောက်ပြီးကြွေသွားပါမည်။ ချက်တိုင်ကို မည်သည့်အရာ/ဆေးမှ ထည့်ရန်မလိုပါ။ အိမ်တွင်မွေးဖွားသောကလေးဖြစ်ပါက မွေးပြီးပြီးချင်း <strong>၇.၁% ကလိုဟက်ဇဒင်း ဆေးရည်</strong> ထည့်ပေးရပါမည်။</td></tr>
+            <tr><td>၄</td><td>ချက်မှပြည်ထွက်ခြင်း / ချက်ပတ်လည်နီခြင်း</td><td>သန့်ရှင်းသော(သို့)ပေါင်းထားသော ဆေးဂွမ်းကို အရက်ပျံရွှဲရွှဲဆွတ်၍ ပြည်များကိုဖယ်ရှားသန့်စင်ပြီး ခြောက်အောင်ထားပါ။ ဆေးရုံ/ဆေးခန်း/ကျန်းမာရေးဌာနသို့ အမြန်ဆုံးပြသပါ။</td></tr>
+            <tr><td>၅</td><td>အရေပြားပြည်တည်နာ ပေါက်ခြင်း</td><td>သန့်ရှင်းသောဆေးဂွမ်းကို အရက်ပျံဆွတ်ပြီး ပြည်ဖုများပေါ် ညင်သာစွာဖိ၍ ဖယ်ရှားပေးပါ။ နီးစပ်ရာဆေးရုံ/ဆေးခန်း/ကျန်းမာရေးဌာနသို့ အမြန်ဆုံးပြသပါ။</td></tr>
+            <tr><td>၆</td><td>အသားဝါခြင်း</td><td>မိခင်နို့ပါ တိုက်ပေးပါ။ နို့စို့ခက်ခဲလျှင် နို့ညှစ်ပြီး ခွက်ဖြင့်တိုက်ပါ။ နို့စို့နည်းခြင်း၊ မှိန်းခြင်းရှိပါက နီးစပ်ရာဆေးရုံ/ဆေးခန်းသို့ အမြန်ဆုံးပြသပါ။</td></tr>
+            <tr><td>၇</td><td>ဖျားခြင်း</td><td>မိခင်နို့တိုက်ပေးပါ။ ကိုယ်ပူကြီးလျှင် ရေပတ်တိုက်ပေးနိုင်ပါသည် (ရေခဲရေ မသုံးရပါ)။ သန့်ရှင်းခြောက်သွေ့သော အနှီးဖြင့် ချောင်ချောင်ထွေးပတ်ပြီး နွေးနွေးထွေးထွေးထားပါ။</td></tr>
+          </table>
+        `
+      },
+      {
+        id: "diarrhea",
+        cat: "child",
+        icon: "💧",
+        title: "၇။ ဝမ်းပျက်ဝမ်းလျှော အိမ်တွင်းပြုစုနည်း၊ ဓာတ်ဆားရည်ဖျော်နည်းနှင့် ဇင့်ဆာလ်ဖိတ်",
+        summary: "အရည်ပိုတိုက်ခြင်း၊ (၆)လအောက်/အထက် ကျွေးမွေးနည်း၊ ဓာတ်ဆားရည် (၄ ဆင့်) နှင့် ဇင့် (၁၀-၁၄ ရက်)",
+        html: `
+          <h4>🥣 ဝမ်းပျက်ဝမ်းလျှောနေသောကလေးကို အိမ်တွင်ပြုစုခြင်း</h4>
+          <ul>
+            <li>ခါတိုင်းထက် အရည်ပိုတိုက်ပါ (ဓာတ်ဆားရည်၊ ထမင်းရည်၊ ဆန်ပြုတ်၊ စွပ်ပြုတ်၊ လတ်ဆတ်သောသစ်သီးဖျော်ရည်၊ ရေနွေးကြမ်း၊ ရေ၊ အုန်းစိမ်းရည်)။</li>
+            <li>ကလေးသောက်နိုင်သမျှ ဝမ်းရပ်သွားသည်အထိ အရည်ဆက်တိုက်နေရန်လိုပါသည်။</li>
+            <li><strong>(၆) လအောက်ကလေးများအား:</strong> မိခင်နို့ မကြာခဏတိုက်ပါ။ မိခင်နို့မတိုက်သောကလေးဖြစ်ပါက တိုက်နေကျနို့ ဆက်တိုက်ပါ။ ဓာတ်ဆားရည်(သို့) ရေသန့်(သို့) ရေကျက်အေးတိုက်ပါ။</li>
+            <li><strong>(၆) လအထက်ကလေးများအား:</strong> ထမင်းပျော့ပျော့ကျွေးပါ။ အသား၊ ငါး၊ ပဲ၊ ဥအမျိုးမျိုးနှင့် အသီးအရွက်တို့ကို နူးနပ်စွာချက်ကျွေးပါ။ ထမင်းတစ်ခါကျွေးတိုင်း ဆီလက်ဖက်ရည်ဇွန်းတစ်ဇွန်း(သို့) နှစ်ဇွန်းရောကျွေးပါ။ တစ်နေ့ (၆) ကြိမ်ကျွေးပါ။ ဝမ်းရပ်သွားသော်လည်း (၂) ပတ်ခန့်အထိ ပုံမှန်ထက်တစ်နေ့တစ်ကြိမ် ပို၍ကျွေးပါ။</li>
+          </ul>
+          <h4>🧂 ဓာတ်ဆားရည်ပြင်ဆင်ခြင်း (၄ ဆင့်)</h4>
+          <ol>
+            <li>ဓာတ်ဆားရည်မဖျော်ခင် လက်ကို ဆပ်ပြာနှင့် စင်ကြယ်အောင်ဆေးပါ။</li>
+            <li>ဓာတ်ဆားထုပ်အတွင်းမှ ဓာတ်ဆားမှုန့်အားလုံးကို သန့်စင်သောပုလင်း၊ ဇလုံထဲတွင် ထည့်ပါ။</li>
+            <li>ဓာတ်ဆားထုပ်ပေါ်ပါ အညွှန်းအတိုင်း ရေပမာဏ (ရေကျက်အေး၊ ရေသန့်) ကိုထည့်၍ ဓာတ်ဆားမှုန့်အားလုံးကို သမစွာပျော်ဝင်အောင်ဖျော်ပါ။</li>
+            <li>ဖျော်ထားသော ဓာတ်ဆားရည်ကို <strong>၂၄ နာရီအတွင်း</strong> သုံးပါ။ ပိုသောဓာတ်ဆားရည်ကို လွှင့်ပစ်ပါ။</li>
+          </ol>
+          <h4>💊 ဇင့်ဆာလ်ဖိတ်ဖြည့်စွက်ပေးခြင်း</h4>
+          <p>ကလေးဝမ်းပျက်ဝမ်းလျှောသည့်အခါ အသက်အရွယ်အလိုက် တိုက်ကျွေးရမည့် <strong>ဇင့်ဆာလ်ဖိတ်ဆေးပြားအား ၁၀ ရက် (သို့) ၁၄ ရက်အထိ</strong> ဆက်လက်တိုက်ကျွေးရမည်။</p>
+        `
+      },
+      {
+        id: "child-safety",
+        cat: "child",
+        icon: "🛡️",
+        title: "၈။ ကလေးများ မတော်တဆ ထိခိုက်ဒဏ်ရာရခြင်းမှ ကာကွယ်ခြင်း (အချက် ၇ ချက်)",
+        summary: "ဆေးဝါး၊ ရေနွေးဘူး၊ လျှပ်စစ်မီးခလုတ်၊ ရေတွင်းရေကန်၊ အစေ့များနှင့် မီးဖိုအနီး သတိပြုရန်",
+        html: `
+          <h4>🛡️ အိမ်တွင်း မတော်တဆ ထိခိုက်ဒဏ်ရာရခြင်း မဖြစ်စေရန် (၇) ချက်</h4>
+          <ol>
+            <li>ဆေးများ၊ အဆိပ်အတောက်ဖြစ်စေသောအရာများ ကလေးလက်လှမ်းမီသောနေရာများတွင် မထားပါနှင့်။ ဗီဒိုထဲတွင် သော့ခတ် သိမ်းထားပါ။</li>
+            <li>ရေနွေးဘူးများ၊ ကွဲစေသောပစ္စည်းများနှင့် ချွန်ထက်သောအရာများ ကလေးအနီးတွင် မထားပါနှင့်။</li>
+            <li>လျှပ်စစ်မီးခလုပ်များ၊ ပလပ်ပေါက်များ ကလေးလက်လှမ်းမမီသောနေရာတွင် တပ်ဆင်ပါ။</li>
+            <li>ကလေးအား ရေတွင်းရေကန်အနီးအနားနှင့် မြင့်သောနေရာတို့တွင် မကစားပါစေနှင့်။</li>
+            <li>ကလေးအား မျက်ခြေပြတ်မခံပါနှင့်။ စောင့်ကြည့်နေပါ။</li>
+            <li>ကလေးပါးစပ်ထဲဝင်ပြီး အသက်ရှူလမ်းကြောင်းကိုပိတ်ဆို့စေနိုင်သည့် ကျောက်လုံး၊ ဂေါ်လီလုံး၊ အစေ့များ (မန်ကျည်းစေ့၊ ဩဇာစေ့) တို့နှင့် မကစားပါစေနှင့်။</li>
+            <li>မီးဖိုနှင့် မီးခွက်များအနီးတွင် ကလေးကို မကစားပါစေနှင့်။</li>
+          </ol>
+        `
+      },
+      {
+        id: "family-planning",
+        cat: "fp",
+        icon: "💊",
+        title: "၉။ သားဆက်ခြားနည်းလမ်းများ (၆ မျိုး) နှင့် ထိရောက်မှုနှိုင်းယှဉ်ချက် (၃ ဆင့်)",
+        summary: "နောက်ထပ်ကလေးမလိုချင်လျှင် သားဆက်ခြားနည်းများနှင့် အကျိုးသက်ရောက်မှု အဆင့်များ",
+        html: `
+          <h4>🌸 နောက်ထပ် ကလေးမလိုချင်လျှင် သားဆက်ခြားပါ (အဓိကနည်းလမ်း ၆ မျိုး)</h4>
+          <ol>
+            <li>စားဆေး (နေ့စဉ်သောက် သားဆက်ခြားစားဆေး)</li>
+            <li>ကွန်ဒုံး (အမျိုးသားသုံး / အမျိုးသမီးသုံး)</li>
+            <li>လက်မောင်းအရေပြားအောက်ထည့် သားဆက်ခြားပစ္စည်း (Implant)</li>
+            <li>သားအိမ်တွင်းထည့်ပစ္စည်း (IUD)</li>
+            <li>အရေးပေါ် သားဆက်ခြားစားဆေး</li>
+            <li>၃ လခံထိုးဆေး</li>
+          </ol>
+          <h4>📊 သားဆက်ခြားနည်းလမ်းများ၏ နှိုင်းယှဉ်အကျိုးသက်ရောက်မှု (၃ ဆင့်)</h4>
+          <ul>
+            <li><strong>🟢 ပိုမိုထိရောက်သည့် နည်းလမ်းများ</strong> <em>(တစ်နှစ်လျှင် အမျိုးသမီး ၁၀၀ ဦးတွင် ကိုယ်ဝန်ဆောင်မှု ၁ ဦးထက်နည်းခြင်း)</em>: အရေပြားအောက်ထည့် သားဆက်ခြားပစ္စည်း၊ သားအိမ်တွင်းထည့်ပစ္စည်း၊ အမျိုးသမီး သားကြောဖြတ်ခြင်း။</li>
+            <li><strong>🟡 အလယ်အလတ်အဆင့် နည်းလမ်းများ:</strong> သားဆက်ခြားထိုးဆေး၊ မိခင်နို့တိုက်ကျွေးခြင်းဖြင့် သားဆက်ခြားခြင်း၊ သားဆက်ခြားစားဆေး၊ အရေပြားပေါ်ကပ်သည့်နည်း၊ သားအိမ်တွင်းထည့်သည့်ကွင်း၊ အမျိုးသားသုံးကွန်ဒုံး၊ သားအိမ်ခေါင်းအစွပ်၊ အမျိုးသမီးသုံးကွန်ဒုံး။</li>
+            <li><strong>🔴 ထိရောက်မှုနည်းသည့် နည်းလမ်းများ</strong> <em>(တစ်နှစ်လျှင် အမျိုးသမီး ၁၀၀ ဦးတွင် ကိုယ်ဝန်ဆောင်မှု ၃၀ ဦးခန့်ခြင်း)</em>: ရက်ရှောင်ခြင်း၊ သုတ်ရည်ကို အပြင်သို့ထွက်စေသည့်နည်းလမ်း၊ သုတ်ပိုးသေဆေး အသုံးပြုခြင်း။</li>
+          </ul>
+        `
+      }
+    ];
+
+    /* ==========================================================================
+       2. APPLICATION STATE & LOCALSTORAGE PERSISTENCE
+       ========================================================================== */
+    const LS_KEYS = {
+      PATIENTS: "mch_v3_patients",
+      NOTIS: "mch_v3_notis",
+      OUTBOX: "mch_v3_outbox",
+      BOOKMARKS: "mch_v3_bookmarks",
+      SETTINGS: "mch_v3_settings"
+    };
+
+    function getOffsetDate(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split("T")[0];
+    }
+
+    function buildSamplePatient() {
+      const lmpSample = getOffsetDate(-175); // 25 weeks pregnant
+      const eddSample = getOffsetDate(105);
+      const childDobSample = getOffsetDate(-135); // ~4.5 months old child
+      return {
+        id: "MCH-0001",
+        serial: "၀၀၁",
+        township: "ပွင့်ဖြူမြို့နယ်",
+        village: "ရွှေတောင်ရွာ",
+        address: "အမှတ် (၁၂)၊ ဗိုလ်ချုပ်လမ်း",
+        motherName: "ဒေါ်အေးအေး",
+        motherAge: "28",
+        nrc: "၈/ပဖန(နိုင်)၁၂၃၄၅၆",
+        education: "အထက်တန်း",
+        occupation: "တောင်သူ",
+        phone: "09-401234567",
+        husbandName: "ဦးကျော်မင်း",
+        husbandOcc: "တောင်သူ",
+        bloodGroup: "O+",
+        lmp: lmpSample,
+        edd: eddSample,
+        nextAppt: getOffsetDate(4),
+        gravida: "2",
+        para: "1",
+        abortion: "0",
+        living: "1",
+        prevPregnancies: [
+          { year: "2023", duration: "လစေ့ (၉ လ)", mode: "ရိုးရိုး", weight: "3.2", status: "ကျန်းမာ / အသက်ရှင်" }
+        ],
+        historyConditions: ["သွေးအားနည်း"],
+        labHiv: "မရှိ (-)",
+        labVdrl: "မရှိ (-)",
+        labHepB: "မရှိ (-)",
+        labHb: "10.8 g/dL",
+        labUrine: "ပုံမှန် (-)",
+        tt1: getOffsetDate(-90),
+        tt2: getOffsetDate(-55),
+        dewormDate: getOffsetDate(-40),
+        vitNotes: "သံဓာတ်/ဖောလစ် နေ့စဉ် ၁ ပြား ပေးပြီး",
+        ancVisits: [
+          { visitNum: 1, date: getOffsetDate(-85), weeks: 13, weight: 50.0, bp: "110/70", fh: "13", fhs: "148", edema: "မရှိ", meds: "သံဓာတ်/ဖောလစ်", nextAppt: getOffsetDate(-40) },
+          { visitNum: 2, date: getOffsetDate(-35), weeks: 20, weight: 53.5, bp: "118/76", fh: "20", fhs: "144", edema: "မရှိ", meds: "သံဓာတ်/ဖောလစ် + သန်ချဆေး", nextAppt: getOffsetDate(-5) },
+          { visitNum: 3, date: getOffsetDate(-3), weeks: 25, weight: 52.8, bp: "120/80", fh: "25", fhs: "142", edema: "မရှိ", meds: "သံဓာတ်/ဖောလစ်", nextAppt: getOffsetDate(4) }
+        ],
+        childName: "မောင်သီဟ",
+        childGender: "ယောက်ျားလေး",
+        childDob: childDobSample,
+        birthWeight: "3.1",
+        deliveryPlace: "ရိုးရိုးမွေး / ကျေးလက်ကျန်းမာရေးဌာန",
+        vaccinesDone: ["birth", "2m"],
+        childWeights: [
+          { month: 0, weight: 3.1, muac: "11.5", vitA: "မတိုက်ရသေး", deworm: "မတိုက်ရသေး" },
+          { month: 2, weight: 5.3, muac: "13.0", vitA: "မတိုက်ရသေး", deworm: "မတိုက်ရသေး" },
+          { month: 4, weight: 5.0, muac: "12.8", vitA: "မတိုက်ရသေး", deworm: "မတိုက်ရသေး" }
+        ],
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    let appState = {
+      patients: [],
+      notifications: [],
+      outbox: [],
+      bookmarks: ["danger-signs", "vaccines"],
+      settings: { pinEnabled: false, pinCode: "" },
+      currentTab: "home",
+      guideFilter: "all",
+      notiFilter: "all",
+      chartMode: "mother",
+      quickChartPoints: { mother: [], boy: [], girl: [] },
+      formDirty: false,
+      draftPrevPregs: [],
+      draftAncVisits: [],
+      draftChildWeights: [],
+      draftVaccinesDone: [],
+      pinEntry: ""
+    };
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function saveJSON(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        showToast("Storage ပြည့်နေပါသည် - Backup ထုတ်ယူပါ", true);
+      }
+    }
+
+    function initializeData() {
+      const savedPatients = loadJSON(LS_KEYS.PATIENTS, null);
+      if (savedPatients === null) {
+        appState.patients = [buildSamplePatient()];
+        appState.outbox = [
+          { id: "OBX-1", patientId: "MCH-0001", name: "ဒေါ်အေးအေး", time: new Date().toLocaleTimeString() }
+        ];
+        saveJSON(LS_KEYS.PATIENTS, appState.patients);
+        saveJSON(LS_KEYS.OUTBOX, appState.outbox);
+      } else {
+        appState.patients = savedPatients;
+        appState.outbox = loadJSON(LS_KEYS.OUTBOX, []);
+      }
+      appState.bookmarks = loadJSON(LS_KEYS.BOOKMARKS, ["danger-signs", "vaccines"]);
+      appState.settings = { ...appState.settings, ...loadJSON(LS_KEYS.SETTINGS, {}) };
+      appState.notifications = loadJSON(LS_KEYS.NOTIS, []);
+      regenerateAllNotifications();
+    }
+
+    /* ==========================================================================
+       3. WHO INTERPOLATION & NOTIFICATION ENGINE
+       ========================================================================== */
+    function interpWhoRef(refArr, month) {
+      const m = Math.max(0, Math.min(60, Number(month) || 0));
+      for (let i = 0; i < refArr.length - 1; i++) {
+        const a = refArr[i], b = refArr[i + 1];
+        if (m >= a.m && m <= b.m) {
+          const t = (m - a.m) / (b.m - a.m);
+          return {
+            red: a.red + t * (b.red - a.red),
+            yel: a.yel + t * (b.yel - a.yel),
+            med: a.med + t * (b.med - a.med)
+          };
+        }
+      }
+      return refArr[refArr.length - 1];
+    }
+
+    function regenerateAllNotifications() {
+      const existingReadMap = {};
+      appState.notifications.forEach(n => { existingReadMap[n.id] = n.read; });
+
+      const list = [];
+      const todayStr = getOffsetDate(0);
+      const nowTime = new Date().toLocaleString("my-MM", { hour12: true, month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+      appState.patients.forEach(p => {
+        // 1. Maternal ANC Weight Drop Check
+        const ancSorted = [...(p.ancVisits || [])].filter(v => Number(v.weight) > 0).sort((a, b) => Number(a.visitNum) - Number(b.visitNum));
+        if (ancSorted.length >= 2) {
+          const prevW = Number(ancSorted[ancSorted.length - 2].weight);
+          const currW = Number(ancSorted[ancSorted.length - 1].weight);
+          if (currW < prevW) {
+            const nid = `w-mom-${p.id}-${currW}`;
+            list.push({
+              id: nid,
+              category: "weight",
+              urgent: true,
+              title: `🚨 မိခင်ကိုယ်အလေးချိန် ကျဆင်းမှု (${p.motherName})`,
+              body: `ယခင် ANC ${prevW} kg မှ ယခု ${currW} kg သို့ လျော့ကျသွားပါသည်။ ကျန်းမာရေးဌာနနှင့် အမြန်စစ်ဆေးပါ။`,
+              patientId: p.id,
+              time: nowTime,
+              read: !!existingReadMap[nid]
+            });
+          }
+        }
+
+        // 2. Child Weight Drop OR WHO Yellow/Red Zone Check
+        const cwSorted = [...(p.childWeights || [])].filter(w => Number(w.weight) > 0).sort((a, b) => Number(a.month) - Number(b.month));
+        if (cwSorted.length >= 1) {
+          const last = cwSorted[cwSorted.length - 1];
+          const prev = cwSorted.length >= 2 ? cwSorted[cwSorted.length - 2] : null;
+          const refArr = p.childGender === "မိန်းကလေး" ? WHO_GIRL_REF : WHO_BOY_REF;
+          const ref = interpWhoRef(refArr, last.month);
+          const isDrop = prev && Number(last.weight) < Number(prev.weight);
+          const isRed = Number(last.weight) < ref.red;
+          const isYel = Number(last.weight) < ref.yel;
+
+          if (isDrop || isRed || isYel) {
+            const reasons = [];
+            if (isDrop) reasons.push(`အလေးချိန်ကျဆင်း (${prev.weight} kg → ${last.weight} kg)`);
+            if (isRed) reasons.push("WHO အနီရောင်ဇုန် (စိုးရိမ်ရ)");
+            else if (isYel) reasons.push("WHO အဝါရောင်ဇုန် (မကောင်း)");
+            const nid = `w-child-${p.id}-${last.month}-${last.weight}`;
+            list.push({
+              id: nid,
+              category: "weight",
+              urgent: true,
+              title: `🚨 ကလေးကိုယ်အလေးချိန် သတိပေးချက် (${p.childName || p.motherName})`,
+              body: `အသက် ${last.month} လ (${last.weight} kg) — ${reasons.join(" • ")}။ အာဟာရနှင့် ကျန်းမာရေး အထူးဂရုစိုက်ပါ။`,
+              patientId: p.id,
+              time: nowTime,
+              read: !!existingReadMap[nid]
+            });
+          }
+        }
+
+        // 3. Midwife Next Appointment Date Reminder
+        if (p.nextAppt) {
+          const nid = `appt-${p.id}-${p.nextAppt}`;
+          const isPastOrToday = p.nextAppt <= todayStr;
+          list.push({
+            id: nid,
+            category: "appt",
+            urgent: isPastOrToday,
+            title: `📅 ဆရာမ ချိန်းဆိုရက် (${p.motherName})`,
+            body: `နောက်တစ်ကြိမ် ချိန်းဆိုရက်: ${p.nextAppt} (${p.nextAppt === todayStr ? "ယနေ့ဖြစ်ပါသည်" : (p.nextAppt < todayStr ? "ရက်ကျော်နေပါသည်" : "လာမည့်ရက်ချိန်း")})`,
+            patientId: p.id,
+            time: nowTime,
+            read: !!existingReadMap[nid]
+          });
+        }
+
+        // 4. Maternal ANC Schedule, TT/Td, Deworming, Iron/B1 & Overdue EDD
+        if (p.lmp) {
+          const lmpDate = new Date(p.lmp + "T00:00:00");
+          if (!isNaN(lmpDate.getTime())) {
+            const eddDate = p.edd ? new Date(p.edd + "T00:00:00") : new Date(lmpDate.getTime() + 280 * 86400000);
+            const eddStr = eddDate.toISOString().split("T")[0];
+            const overdueStr = new Date(eddDate.getTime() + 7 * 86400000).toISOString().split("T")[0];
+            const anc1 = new Date(lmpDate.getTime() + 112 * 86400000).toISOString().split("T")[0];
+            const anc2 = new Date(lmpDate.getTime() + 182 * 86400000).toISOString().split("T")[0];
+            const anc3 = new Date(lmpDate.getTime() + 224 * 86400000).toISOString().split("T")[0];
+            const anc4 = new Date(lmpDate.getTime() + 252 * 86400000).toISOString().split("T")[0];
+
+            const isOverdue = todayStr > overdueStr;
+            const nid = `anc-sched-${p.id}`;
+            list.push({
+              id: nid,
+              category: "appt",
+              urgent: isOverdue,
+              title: isOverdue
+                ? `🚨 မွေးဖွားရက်ကျော်လွန် သတိပေးချက် (${p.motherName})`
+                : `🤰 ကိုယ်ဝန်စောင့်ရှောက်မှု အချိန်ဇယား (${p.motherName})`,
+              body: isOverdue
+                ? `ခန့်မှန်းမွေးရက် (${eddStr}) ထက် ၁ ပတ်ကျော်နေပါပြီ! ကျန်းမာရေးဌာနသို့ ချက်ချင်းပြသပါ။`
+                : `ANC (၄လ): ${anc1} • (၆-၇လ): ${anc2} • (၈လ): ${anc3} • (၉လ): ${anc4} | နေ့စဉ် သံဓာတ်/ဖောလစ်၊ ဗီတာမင် B1 သောက်ရန်နှင့် ${!p.tt2 ? "TT/Td ဒုတိယအကြိမ်ထိုးရန်" : "TT/Td ပြီး"} ${!p.dewormDate ? "• ၄ လကျော် သန်ချဆေးသောက်ရန်" : ""}`,
+              patientId: p.id,
+              time: nowTime,
+              read: !!existingReadMap[nid]
+            });
+          }
+        }
+
+        // 5. Child EPI Exact Vaccine Due Dates & Monthly Weighing
+        if (p.childDob) {
+          const dob = new Date(p.childDob + "T00:00:00");
+          if (!isNaN(dob.getTime())) {
+            const doneSet = new Set(p.vaccinesDone || []);
+            const doneList = EPI_STAGES.filter(s => doneSet.has(s.key));
+            const remList = EPI_STAGES.filter(s => !doneSet.has(s.key));
+            const doneText = doneList.length ? doneList.map(s => s.label).join("၊ ") : "မထိုးရသေး";
+            let nextText = "ကာကွယ်ဆေး အားလုံးထိုးပြီးပါပြီ ✓";
+            let isDueSoon = false;
+
+            if (remList.length > 0) {
+              const nextS = remList[0];
+              const dueDateStr = new Date(dob.getTime() + nextS.days * 86400000).toISOString().split("T")[0];
+              isDueSoon = dueDateStr <= getOffsetDate(14);
+              nextText = `နောက်တစ်ကြိမ်: ${nextS.label} (${nextS.detail}) — ထိုးရမည့်ရက်: ${dueDateStr}`;
+            }
+
+            const nid = `epi-${p.id}-${doneList.length}`;
+            list.push({
+              id: nid,
+              category: "vaccine",
+              urgent: isDueSoon,
+              title: `💉 ကလေးကာကွယ်ဆေး (${p.childName || p.motherName})`,
+              body: `ထိုးပြီး (${doneList.length} ကြိမ်): ${doneText} | ကျန်ရှိ (${remList.length} ကြိမ်) — ${nextText} • လစဉ် ကိုယ်အလေးချိန် ချိန်တွယ်ရန် သတိပြုပါ။`,
+              patientId: p.id,
+              time: nowTime,
+              read: !!existingReadMap[nid]
+            });
+          }
+        }
+      });
+
+      // Sort urgent first
+      list.sort((a, b) => Number(b.urgent) - Number(a.urgent));
+      appState.notifications = list;
+      saveJSON(LS_KEYS.NOTIS, list);
+      updateBellAndHomeStats();
+    }
+
+    function updateBellAndHomeStats() {
+      const unreadCount = appState.notifications.filter(n => !n.read).length;
+      const badge = document.getElementById("bellUnreadBadge");
+      if (unreadCount > 0) {
+        badge.style.display = "flex";
+        badge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+      } else {
+        badge.style.display = "none";
+      }
+
+      document.getElementById("statPatients").textContent = String(appState.patients.length);
+      document.getElementById("statAppts").textContent = String(appState.notifications.filter(n => n.category === "appt").length);
+      document.getElementById("statUrgent").textContent = String(appState.notifications.filter(n => n.urgent).length);
+
+      // Home Preview Card
+      const previewEl = document.getElementById("homeNotiPreview");
+      const topNotis = appState.notifications.slice(0, 3);
+      if (topNotis.length === 0) {
+        previewEl.innerHTML = `<div class="muted">လက်ရှိ သတိပေးချက် မရှိသေးပါ။</div>`;
+      } else {
+        previewEl.innerHTML = topNotis.map(n => `
+          <div class="noti-card ${n.urgent ? 'urgent' : ''}" onclick="openNotiDrawer('${n.category}')" style="cursor:pointer; margin-bottom:8px;">
+            <div style="font-weight:800; font-size:13.5px;">${escHtml(n.title)}</div>
+            <div class="muted" style="font-size:12.5px; margin-top:3px; color:${n.urgent ? 'var(--danger-text)' : 'var(--text-muted)'};">${escHtml(n.body)}</div>
+          </div>
+        `).join("");
+      }
+    }
+
+    /* Notification Drawer Controls */
+    function openNotiDrawer(filterCat = "all") {
+      setNotiFilter(filterCat);
+      document.getElementById("notiDrawer").classList.add("open");
+    }
+
+    function closeNotiDrawer() {
+      document.getElementById("notiDrawer").classList.remove("open");
+    }
+
+    function setNotiFilter(cat) {
+      appState.notiFilter = cat;
+      ["all", "weight", "vaccine", "appt"].forEach(k => {
+        document.getElementById("nFilter-" + k).classList.toggle("active", k === cat);
+      });
+      renderNotiDrawerList();
+    }
+
+    function renderNotiDrawerList() {
+      const container = document.getElementById("notiDrawerList");
+      const filtered = appState.notiFilter === "all"
+        ? appState.notifications
+        : appState.notifications.filter(n => n.category === appState.notiFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="card muted" style="text-align:center;">ဤကဏ္ဍတွင် သတိပေးချက် မရှိပါ။</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(n => `
+        <div class="noti-card ${n.urgent ? 'urgent' : ''} ${!n.read ? 'unread' : ''}" onclick="onClickNotiItem('${n.id}', '${n.patientId}')" style="cursor:pointer;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+            <strong style="font-size:14px;">${escHtml(n.title)}</strong>
+            ${!n.read ? `<span class="badge ${n.urgent ? 'badge-danger' : 'badge-info'}">အသစ်</span>` : ''}
+          </div>
+          <div style="font-size:13px; margin-top:5px;">${escHtml(n.body)}</div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:6px;">🕒 ${escHtml(n.time)}</div>
+        </div>
+      `).join("");
+    }
+
+    function onClickNotiItem(notiId, patientId) {
+      const item = appState.notifications.find(n => n.id === notiId);
+      if (item) {
+        item.read = true;
+        saveJSON(LS_KEYS.NOTIS, appState.notifications);
+        updateBellAndHomeStats();
+      }
+      closeNotiDrawer();
+      if (patientId) {
+        switchTab("records");
+        openEditPatientForm(patientId);
+      }
+    }
+
+    function markAllNotisRead() {
+      appState.notifications.forEach(n => { n.read = true; });
+      saveJSON(LS_KEYS.NOTIS, appState.notifications);
+      updateBellAndHomeStats();
+      renderNotiDrawerList();
+      showToast("သတိပေးချက်အားလုံး ဖတ်ပြီးအဖြစ် မှတ်သားပြီးပါပြီ");
+    }
+
+    /* ==========================================================================
+       4. TAB NAVIGATION & BACK-BUTTON PROTECTION (popstate)
+       ========================================================================== */
+    function switchTab(tabName) {
+      appState.currentTab = tabName;
+      document.querySelectorAll(".tab-view").forEach(v => v.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+      document.getElementById("view-" + tabName).classList.add("active");
+      document.getElementById("nav-" + tabName).classList.add("active");
+
+      if (tabName === "home") updateBellAndHomeStats();
+      if (tabName === "guides") renderGuides();
+      if (tabName === "tools") { populateChartPatientSelect(); drawActiveChart(); }
+      if (tabName === "records") renderPatientList();
+      if (tabName === "settings") renderSettingsView();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function initBackProtection() {
+      history.replaceState({ mchGuard: true }, "");
+      history.pushState({ mchGuard: true }, "");
+
+      window.addEventListener("popstate", () => {
+        history.pushState({ mchGuard: true }, "");
+        handleBackButton();
+      });
+    }
+
+    function handleBackButton() {
+      // 1. Close modal if open
+      if (document.getElementById("modalBackdrop").classList.contains("open")) {
+        closeModal();
+        return;
+      }
+      // 2. Close Notification Drawer if open
+      if (document.getElementById("notiDrawer").classList.contains("open")) {
+        closeNotiDrawer();
+        return;
+      }
+      // 3. If inside Patient Form
+      if (appState.currentTab === "records" && document.getElementById("recordsFormPanel").style.display === "block") {
+        attemptClosePatientForm();
+        return;
+      }
+      // 4. If on another tab, return to Home
+      if (appState.currentTab !== "home") {
+        switchTab("home");
+        return;
+      }
+      // 5. On Home tab -> Show clear Burmese Exit Confirmation Modal
+      openModal("🚪 အက်ပ်မှ ထွက်လိုပါသလား?", `
+        <p style="margin-top:0;">မိခင်နှင့်ကလေး ကျန်းမာရေး (MCH Care) အက်ပ်မှ ထွက်လိုပါသလား?</p>
+        <div class="grid-2">
+          <button type="button" class="btn btn-primary" onclick="closeModal()">မထွက်ပါ</button>
+          <button type="button" class="btn btn-danger" onclick="confirmAppExit()">ထွက်မည်</button>
+        </div>
+      `);
+    }
+
+    function confirmAppExit() {
+      closeModal();
+      showToast("အက်ပ်မှ ထွက်ရန် အတည်ပြုပြီးပါပြီ");
+      setTimeout(() => { try { window.close(); } catch (e) {} }, 350);
+    }
+
+    /* ==========================================================================
+       5. PATIENT RECORD INTERACTIVE 5-BUTTON ACCORDION FORM
+       ========================================================================== */
+    function initHistoryCheckboxes() {
+      const grid = document.getElementById("historyCheckGrid");
+      grid.innerHTML = HISTORY_CONDITIONS.map((cond, idx) => `
+        <label class="check-card" id="hCard-${idx}">
+          <input type="checkbox" class="hist-chk" value="${cond}" onchange="this.closest('.check-card').classList.toggle('checked', this.checked); markFormDirty();" />
+          <span>${cond}</span>
+        </label>
+      `).join("");
+    }
+
+    function toggleAccordion(secNum) {
+      const target = document.getElementById("accItem-" + secNum);
+      const wasOpen = target.classList.contains("open");
+
+      // Close others for clean mobile focus, or toggle clicked one open
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById("accItem-" + i);
+        if (i === secNum) {
+          el.classList.toggle("open", !wasOpen);
+        } else {
+          el.classList.remove("open");
+        }
+      }
+
+      if (!wasOpen) {
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 60);
+      }
+    }
+
+    function markFormDirty() {
+      appState.formDirty = true;
+    }
+
+    function autoCalcFormEdd() {
+      const lmpVal = document.getElementById("pLmp").value;
+      if (!lmpVal) return;
+      const d = new Date(lmpVal + "T00:00:00");
+      if (!isNaN(d.getTime())) {
+        const edd = new Date(d.getTime() + 280 * 86400000);
+        document.getElementById("pEdd").value = edd.toISOString().split("T")[0];
+      }
+    }
+
+    function openNewPatientForm() {
+      switchTab("records");
+      document.getElementById("recordsListPanel").style.display = "none";
+      document.getElementById("recordsFormPanel").style.display = "block";
+      document.getElementById("patientRecordForm").reset();
+      document.getElementById("pId").value = "";
+      document.getElementById("patientFormTitle").textContent = "➕ လူနာမှတ်တမ်း အသစ်ထည့်သွင်းခြင်း";
+
+      document.querySelectorAll(".hist-chk").forEach(chk => {
+        chk.checked = false;
+        chk.closest(".check-card").classList.remove("checked");
+      });
+
+      appState.draftPrevPregs = [];
+      appState.draftAncVisits = [];
+      appState.draftChildWeights = [];
+      appState.draftVaccinesDone = [];
+      appState.formDirty = false;
+
+      renderDraftPrevPregs();
+      renderDraftAncVisits();
+      renderFormVaccines();
+      renderDraftChildWeights();
+
+      // Open section 1 by default
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById("accItem-" + i).classList.toggle("open", i === 1);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openEditPatientForm(patientId) {
+      const p = appState.patients.find(x => x.id === patientId);
+      if (!p) return;
+      openNewPatientForm();
+      document.getElementById("pId").value = p.id;
+      document.getElementById("patientFormTitle").textContent = `✏️ ပြင်ဆင်ရန် (${p.id})`;
+
+      document.getElementById("pSerial").value = p.serial || "";
+      document.getElementById("pTownship").value = p.township || "";
+      document.getElementById("pVillage").value = p.village || "";
+      document.getElementById("pAddress").value = p.address || "";
+      document.getElementById("pMotherName").value = p.motherName || "";
+      document.getElementById("pMotherAge").value = p.motherAge || "";
+      document.getElementById("pBloodGroup").value = p.bloodGroup || "";
+      document.getElementById("pNrc").value = p.nrc || "";
+      document.getElementById("pEducation").value = p.education || "";
+      document.getElementById("pOccupation").value = p.occupation || "";
+      document.getElementById("pPhone").value = p.phone || "";
+      document.getElementById("pHusbandName").value = p.husbandName || "";
+      document.getElementById("pHusbandOcc").value = p.husbandOcc || "";
+      document.getElementById("pLmp").value = p.lmp || "";
+      document.getElementById("pEdd").value = p.edd || "";
+      document.getElementById("pNextAppt").value = p.nextAppt || "";
+
+      document.getElementById("pGravida").value = p.gravida || "";
+      document.getElementById("pPara").value = p.para || "";
+      document.getElementById("pAbortion").value = p.abortion || "";
+      document.getElementById("pLiving").value = p.living || "";
+
+      document.querySelectorAll(".hist-chk").forEach(chk => {
+        const isChecked = (p.historyConditions || []).includes(chk.value);
+        chk.checked = isChecked;
+        chk.closest(".check-card").classList.toggle("checked", isChecked);
+      });
+
+      document.getElementById("pLabHiv").value = p.labHiv || "မစစ်ရသေး";
+      document.getElementById("pLabVdrl").value = p.labVdrl || "မစစ်ရသေး";
+      document.getElementById("pLabHepB").value = p.labHepB || "မစစ်ရသေး";
+      document.getElementById("pLabHb").value = p.labHb || "";
+      document.getElementById("pLabUrine").value = p.labUrine || "";
+      document.getElementById("pTt1").value = p.tt1 || "";
+      document.getElementById("pTt2").value = p.tt2 || "";
+      document.getElementById("pDewormDate").value = p.dewormDate || "";
+      document.getElementById("pVitNotes").value = p.vitNotes || "";
+
+      document.getElementById("pChildName").value = p.childName || "";
+      document.getElementById("pChildGender").value = p.childGender || "ယောက်ျားလေး";
+      document.getElementById("pChildDob").value = p.childDob || "";
+      document.getElementById("pBirthWeight").value = p.birthWeight || "";
+      document.getElementById("pDeliveryPlace").value = p.deliveryPlace || "";
+
+      appState.draftPrevPregs = JSON.parse(JSON.stringify(p.prevPregnancies || []));
+      appState.draftAncVisits = JSON.parse(JSON.stringify(p.ancVisits || []));
+      appState.draftChildWeights = JSON.parse(JSON.stringify(p.childWeights || []));
+      appState.draftVaccinesDone = [...(p.vaccinesDone || [])];
+      appState.formDirty = false;
+
+      renderDraftPrevPregs();
+      renderDraftAncVisits();
+      renderFormVaccines();
+      renderDraftChildWeights();
+    }
+
+    function attemptClosePatientForm() {
+      if (appState.formDirty) {
+        openModal("⚠️ မသိမ်းရသေးသော အချက်အလက်များ", `
+          <p style="margin-top:0;">မသိမ်းရသေးသော အချက်အလက်များ ပျက်သွားနိုင်ပါသည်၊ ထွက်မည်လား?</p>
+          <div class="grid-2">
+            <button type="button" class="btn btn-primary" onclick="closeModal()">ဆက်ဖြည့်မည်</button>
+            <button type="button" class="btn btn-danger" onclick="closeModal(); closePatientFormNow();">ထွက်မည်</button>
+          </div>
+        `);
+      } else {
+        closePatientFormNow();
+      }
+    }
+
+    function closePatientFormNow() {
+      appState.formDirty = false;
+      document.getElementById("recordsFormPanel").style.display = "none";
+      document.getElementById("recordsListPanel").style.display = "block";
+      renderPatientList();
+    }
+
+    /* Section 2: Dynamic Previous Pregnancies */
+    function openAddPrevPregInline() {
+      document.getElementById("ppYear").value = "";
+      document.getElementById("ppDuration").value = "လစေ့";
+      document.getElementById("ppWeight").value = "";
+      document.getElementById("ppStatus").value = "ကျန်းမာ";
+      document.getElementById("prevPregAddBox").style.display = "block";
+    }
+
+    function confirmAddPrevPreg() {
+      const year = document.getElementById("ppYear").value.trim() || "-";
+      const duration = document.getElementById("ppDuration").value.trim() || "-";
+      const mode = document.getElementById("ppMode").value;
+      const weight = document.getElementById("ppWeight").value.trim() || "-";
+      const status = document.getElementById("ppStatus").value.trim() || "-";
+      appState.draftPrevPregs.push({ year, duration, mode, weight, status });
+      document.getElementById("prevPregAddBox").style.display = "none";
+      appState.formDirty = true;
+      renderDraftPrevPregs();
+    }
+
+    function deletePrevPreg(idx) {
+      appState.draftPrevPregs.splice(idx, 1);
+      appState.formDirty = true;
+      renderDraftPrevPregs();
+    }
+
+    function renderDraftPrevPregs() {
+      const el = document.getElementById("prevPregListEl");
+      if (appState.draftPrevPregs.length === 0) {
+        el.innerHTML = `<div class="muted" style="text-align:center; padding:8px;">ယခင်ကိုယ်ဝန်မှတ်တမ်း မထည့်ရသေးပါ။</div>`;
+        return;
+      }
+      el.innerHTML = appState.draftPrevPregs.map((row, idx) => `
+        <div class="sub-card" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div style="font-size:13px;">
+            <strong>${idx + 1}။ ${escHtml(row.year)}</strong> • ${escHtml(row.duration)} • ${escHtml(row.mode)}
+            <div class="muted">ကလေးအလေးချိန်: ${escHtml(row.weight)} kg • ${escHtml(row.status)}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" style="min-height:36px; color:var(--danger);" onclick="deletePrevPreg(${idx})">🗑️</button>
+        </div>
+      `).join("");
+    }
+
+    /* Section 4: Dynamic ANC Visits (1-12) with Immediate Weight Drop Alert */
+    function openAddAncInline() {
+      const nextNum = Math.min(12, appState.draftAncVisits.length + 1);
+      document.getElementById("ancVisitNum").value = String(nextNum);
+      document.getElementById("ancDate").value = getOffsetDate(0);
+      document.getElementById("ancWeeks").value = "";
+      document.getElementById("ancWeight").value = "";
+      document.getElementById("ancBp").value = "120/80";
+      document.getElementById("ancFh").value = "";
+      document.getElementById("ancFhs").value = "";
+      document.getElementById("ancEdema").value = "မရှိ";
+      document.getElementById("ancMeds").value = "သံဓာတ်/ဖောလစ်";
+      document.getElementById("ancNextAppt").value = "";
+      document.getElementById("ancAddBox").style.display = "block";
+    }
+
+    function confirmAddAncVisit() {
+      const visitNum = Number(document.getElementById("ancVisitNum").value);
+      const date = document.getElementById("ancDate").value || getOffsetDate(0);
+      const weeks = Number(document.getElementById("ancWeeks").value) || 0;
+      const weight = Number(document.getElementById("ancWeight").value) || 0;
+      const bp = document.getElementById("ancBp").value.trim() || "-";
+      const fh = document.getElementById("ancFh").value.trim() || "-";
+      const fhs = document.getElementById("ancFhs").value.trim() || "-";
+      const edema = document.getElementById("ancEdema").value;
+      const meds = document.getElementById("ancMeds").value.trim() || "-";
+      const nextAppt = document.getElementById("ancNextAppt").value;
+
+      if (weight <= 0) {
+        showToast("ကိုယ်အလေးချိန် (kg) မှန်ကန်စွာ ထည့်ပါ", true);
+        return;
+      }
+
+      // Check immediate weight drop compared to previous ANC entry
+      const sortedPrev = [...appState.draftAncVisits].filter(v => Number(v.weight) > 0).sort((a, b) => Number(a.visitNum) - Number(b.visitNum));
+      if (sortedPrev.length > 0) {
+        const lastW = Number(sortedPrev[sortedPrev.length - 1].weight);
+        if (weight < lastW) {
+          showToast(`🚨 သတိပေးချက်: ကိုယ်အလေးချိန် ကျဆင်းသွားပါသည် (${lastW} kg → ${weight} kg)!`, true);
+          pushInstantUrgentNoti(
+            "weight",
+            `🚨 မိခင်ကိုယ်အလေးချိန် ကျဆင်းမှု (${document.getElementById("pMotherName").value || "လူနာအသစ်"})`,
+            `ANC အကြိမ် ${visitNum} တွင် ယခင် ${lastW} kg မှ ${weight} kg သို့ လျော့ကျသွားပါသည်။`
+          );
+        }
+      }
+
+      appState.draftAncVisits.push({ visitNum, date, weeks, weight, bp, fh, fhs, edema, meds, nextAppt });
+      if (nextAppt) document.getElementById("pNextAppt").value = nextAppt;
+
+      document.getElementById("ancAddBox").style.display = "none";
+      appState.formDirty = true;
+      renderDraftAncVisits();
+    }
+
+    function deleteAncVisit(idx) {
+      appState.draftAncVisits.splice(idx, 1);
+      appState.formDirty = true;
+      renderDraftAncVisits();
+    }
+
+    function renderDraftAncVisits() {
+      const el = document.getElementById("ancListEl");
+      if (appState.draftAncVisits.length === 0) {
+        el.innerHTML = `<div class="muted" style="text-align:center; padding:8px;">ANC စစ်ဆေးမှု မှတ်တမ်း မထည့်ရသေးပါ။</div>`;
+        return;
+      }
+      el.innerHTML = appState.draftAncVisits.map((v, idx) => `
+        <div class="sub-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <strong style="color:var(--primary-dark);">ANC အကြိမ် (${v.visitNum}) — ${escHtml(v.date)}</strong>
+            <button type="button" class="btn btn-outline btn-sm" style="min-height:34px; color:var(--danger);" onclick="deleteAncVisit(${idx})">🗑️</button>
+          </div>
+          <div style="font-size:13px;">
+            ကိုယ်ဝန်: <strong>${v.weeks} ပတ်</strong> • အလေးချိန်: <strong>${v.weight} kg</strong> • BP: <strong>${escHtml(v.bp)}</strong>
+          </div>
+          <div class="muted" style="font-size:12.5px;">
+            FH: ${escHtml(v.fh)} cm • FHS: ${escHtml(v.fhs)} • ဖောရောင်: ${escHtml(v.edema)} • ဆေး: ${escHtml(v.meds)}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    /* Section 5: Myanmar EPI Auto-Tracker & Child Monthly Weights */
+    function renderFormVaccines() {
+      const dobStr = document.getElementById("pChildDob").value;
+      const dobDate = dobStr ? new Date(dobStr + "T00:00:00") : null;
+      const doneSet = new Set(appState.draftVaccinesDone);
+
+      const doneList = EPI_STAGES.filter(s => doneSet.has(s.key));
+      const remList = EPI_STAGES.filter(s => !doneSet.has(s.key));
+
+      document.getElementById("epiSummaryBanner").innerHTML = `
+        <div>✅ ထိုးပြီး: ${doneList.length} ကြိမ် (${doneList.length ? doneList.map(s => s.label).join("၊ ") : "မရှိသေး"})</div>
+        <div style="margin-top:3px;">⏳ ကျန်ရှိ: ${remList.length} ကြိမ် (${remList.length ? remList.map(s => s.label).join("၊ ") : "အားလုံးပြီးစီး"})</div>
+      `;
+
+      document.getElementById("epiChecklistEl").innerHTML = EPI_STAGES.map(s => {
+        const checked = doneSet.has(s.key);
+        let dueHtml = "";
+        if (dobDate && !isNaN(dobDate.getTime())) {
+          const due = new Date(dobDate.getTime() + s.days * 86400000).toISOString().split("T")[0];
+          dueHtml = `<div style="font-size:12px; color:${checked ? 'var(--success-text)' : 'var(--info-text)'};">📅 ထိုးရမည့်ရက်: <strong>${due}</strong></div>`;
+        }
+        return `
+          <label class="check-card ${checked ? 'checked' : ''}" style="margin-bottom:7px; align-items:flex-start;">
+            <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleFormVaccine('${s.key}', this.checked)" />
+            <div style="flex:1;">
+              <div><strong>${s.label}</strong> — ${s.detail}</div>
+              ${dueHtml}
+            </div>
+          </label>
+        `;
+      }).join("");
+    }
+
+    function toggleFormVaccine(stageKey, isChecked) {
+      if (isChecked) {
+        if (!appState.draftVaccinesDone.includes(stageKey)) appState.draftVaccinesDone.push(stageKey);
+      } else {
+        appState.draftVaccinesDone = appState.draftVaccinesDone.filter(k => k !== stageKey);
+      }
+      appState.formDirty = true;
+      renderFormVaccines();
+    }
+
+    function openAddChildWeightInline() {
+      document.getElementById("cwMonth").value = "";
+      document.getElementById("cwWeight").value = "";
+      document.getElementById("cwMuac").value = "";
+      document.getElementById("cwVitA").value = "မတိုက်ရသေး";
+      document.getElementById("cwDeworm").value = "မတိုက်ရသေး";
+      document.getElementById("childWeightAddBox").style.display = "block";
+    }
+
+    function confirmAddChildWeight() {
+      const month = Number(document.getElementById("cwMonth").value);
+      const weight = Number(document.getElementById("cwWeight").value);
+      const muac = document.getElementById("cwMuac").value.trim() || "-";
+      const vitA = document.getElementById("cwVitA").value;
+      const deworm = document.getElementById("cwDeworm").value;
+
+      if (isNaN(month) || month < 0 || month > 60 || !weight || weight <= 0) {
+        showToast("ကလေးအသက် (0-60 လ) နှင့် ကိုယ်အလေးချိန် (kg) မှန်ကန်စွာ ထည့်ပါ", true);
+        return;
+      }
+
+      // Check weight drop or WHO Yellow/Red zone immediately
+      const gender = document.getElementById("pChildGender").value;
+      const refArr = gender === "မိန်းကလေး" ? WHO_GIRL_REF : WHO_BOY_REF;
+      const ref = interpWhoRef(refArr, month);
+      const sortedPrev = [...appState.draftChildWeights].sort((a, b) => Number(a.month) - Number(b.month));
+      const prevW = sortedPrev.length ? Number(sortedPrev[sortedPrev.length - 1].weight) : null;
+      const isDrop = prevW !== null && weight < prevW;
+      const isRed = weight < ref.red;
+      const isYel = weight < ref.yel;
+
+      if (isDrop || isRed || isYel) {
+        const msg = isDrop
+          ? `🚨 ကလေးကိုယ်အလေးချိန် ကျဆင်းသွားပါသည် (${prevW} kg → ${weight} kg)!`
+          : (isRed ? `🚨 WHO အနီရောင်ဇုန် (စိုးရိမ်ရ): ${month} လ / ${weight} kg` : `⚠️ WHO အဝါရောင်ဇုန် (မကောင်း): ${month} လ / ${weight} kg`);
+        showToast(msg, true);
+        pushInstantUrgentNoti("weight", `🚨 ကလေးကြီးထွားမှု သတိပေးချက် (${document.getElementById("pChildName").value || "ကလေး"})`, msg);
+      }
+
+      appState.draftChildWeights.push({ month, weight, muac, vitA, deworm });
+      appState.draftChildWeights.sort((a, b) => Number(a.month) - Number(b.month));
+      document.getElementById("childWeightAddBox").style.display = "none";
+      appState.formDirty = true;
+      renderDraftChildWeights();
+    }
+
+    function deleteChildWeight(idx) {
+      appState.draftChildWeights.splice(idx, 1);
+      appState.formDirty = true;
+      renderDraftChildWeights();
+    }
+
+    function renderDraftChildWeights() {
+      const el = document.getElementById("childWeightListEl");
+      if (appState.draftChildWeights.length === 0) {
+        el.innerHTML = `<div class="muted" style="text-align:center; padding:8px;">ကလေးကိုယ်အလေးချိန် မှတ်တမ်း မထည့်ရသေးပါ။</div>`;
+        return;
+      }
+      el.innerHTML = appState.draftChildWeights.map((cw, idx) => `
+        <div class="sub-card" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div style="font-size:13px;">
+            <strong>အသက် ${cw.month} လ — ${cw.weight} kg</strong>
+            <div class="muted">MUAC: ${escHtml(cw.muac)} cm • ဗီတာမင်အေ: ${escHtml(cw.vitA)} • သန်ချဆေး: ${escHtml(cw.deworm)}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" style="min-height:34px; color:var(--danger);" onclick="deleteChildWeight(${idx})">🗑️</button>
+        </div>
+      `).join("");
+    }
+
+    function pushInstantUrgentNoti(category, title, body) {
+      appState.notifications.unshift({
+        id: "inst-" + Date.now(),
+        category,
+        urgent: true,
+        title,
+        body,
+        patientId: document.getElementById("pId").value || "",
+        time: new Date().toLocaleTimeString("my-MM", { hour: "2-digit", minute: "2-digit" }),
+        read: false
+      });
+      saveJSON(LS_KEYS.NOTIS, appState.notifications);
+      updateBellAndHomeStats();
+    }
+
+    /* Save Complete Patient Record */
+    function savePatientRecord(event) {
+      event.preventDefault();
+      const motherName = document.getElementById("pMotherName").value.trim();
+      const village = document.getElementById("pVillage").value.trim();
+      if (!motherName || !village) {
+        toggleAccordion(1);
+        showToast("မိခင်အမည် နှင့် ရပ်ကွက်/ကျေးရွာ မဖြစ်မနေ ဖြည့်ပါ", true);
+        return;
+      }
+
+      const editId = document.getElementById("pId").value;
+      const id = editId || ("MCH-" + String(appState.patients.length + 1).padStart(4, "0"));
+
+      const record = {
+        id,
+        serial: document.getElementById("pSerial").value.trim(),
+        township: document.getElementById("pTownship").value.trim(),
+        village,
+        address: document.getElementById("pAddress").value.trim(),
+        motherName,
+        motherAge: document.getElementById("pMotherAge").value.trim(),
+        nrc: document.getElementById("pNrc").value.trim(),
+        education: document.getElementById("pEducation").value.trim(),
+        occupation: document.getElementById("pOccupation").value.trim(),
+        phone: document.getElementById("pPhone").value.trim(),
+        husbandName: document.getElementById("pHusbandName").value.trim(),
+        husbandOcc: document.getElementById("pHusbandOcc").value.trim(),
+        bloodGroup: document.getElementById("pBloodGroup").value,
+        lmp: document.getElementById("pLmp").value,
+        edd: document.getElementById("pEdd").value,
+        nextAppt: document.getElementById("pNextAppt").value,
+        gravida: document.getElementById("pGravida").value,
+        para: document.getElementById("pPara").value,
+        abortion: document.getElementById("pAbortion").value,
+        living: document.getElementById("pLiving").value,
+        prevPregnancies: [...appState.draftPrevPregs],
+        historyConditions: Array.from(document.querySelectorAll(".hist-chk:checked")).map(c => c.value),
+        labHiv: document.getElementById("pLabHiv").value,
+        labVdrl: document.getElementById("pLabVdrl").value,
+        labHepB: document.getElementById("pLabHepB").value,
+        labHb: document.getElementById("pLabHb").value.trim(),
+        labUrine: document.getElementById("pLabUrine").value.trim(),
+        tt1: document.getElementById("pTt1").value,
+        tt2: document.getElementById("pTt2").value,
+        dewormDate: document.getElementById("pDewormDate").value,
+        vitNotes: document.getElementById("pVitNotes").value.trim(),
+        ancVisits: [...appState.draftAncVisits],
+        childName: document.getElementById("pChildName").value.trim(),
+        childGender: document.getElementById("pChildGender").value,
+        childDob: document.getElementById("pChildDob").value,
+        birthWeight: document.getElementById("pBirthWeight").value,
+        deliveryPlace: document.getElementById("pDeliveryPlace").value.trim(),
+        vaccinesDone: [...appState.draftVaccinesDone],
+        childWeights: [...appState.draftChildWeights],
+        updatedAt: new Date().toISOString()
+      };
+
+      const existingIdx = appState.patients.findIndex(p => p.id === id);
+      if (existingIdx >= 0) appState.patients[existingIdx] = record;
+      else appState.patients.unshift(record);
+
+      saveJSON(LS_KEYS.PATIENTS, appState.patients);
+
+      // Add to Outbox queue
+      appState.outbox = appState.outbox.filter(o => o.patientId !== id);
+      appState.outbox.unshift({ id: "OBX-" + Date.now().toString().slice(-4), patientId: id, name: motherName, time: new Date().toLocaleTimeString() });
+      saveJSON(LS_KEYS.OUTBOX, appState.outbox);
+
+      regenerateAllNotifications();
+      closePatientFormNow();
+      showToast("💾 မှတ်တမ်း သိမ်းဆည်းပြီး Auto Noti များ အလိုအလျောက် ဖန်တီးပြီးပါပြီ!");
+    }
+
+    /* Render Patient List */
+    function renderPatientList() {
+      const q = (document.getElementById("patientSearchInput").value || "").trim().toLowerCase();
+      const list = appState.patients.filter(p =>
+        (p.motherName || "").toLowerCase().includes(q) ||
+        (p.childName || "").toLowerCase().includes(q) ||
+        (p.village || "").toLowerCase().includes(q) ||
+        (p.id || "").toLowerCase().includes(q)
+      );
+
+      const container = document.getElementById("patientsListContainer");
+      if (list.length === 0) {
+        container.innerHTML = `<div class="card muted" style="text-align:center;">လူနာမှတ်တမ်း မတွေ့ရှိပါ။ "➕ အသစ်ထည့်" ကို နှိပ်၍ စတင်ထည့်သွင်းနိုင်ပါသည်။</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(p => {
+        const doneCount = (p.vaccinesDone || []).length;
+        return `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+              <div>
+                <div style="font-weight:800; font-size:15.5px;">${escHtml(p.motherName)} ${p.childName ? `• 👶 ${escHtml(p.childName)}` : ''}</div>
+                <div class="muted" style="font-size:12.5px;">ID: ${escHtml(p.id)} • ${escHtml(p.village)} ${p.township ? '(' + escHtml(p.township) + ')' : ''}</div>
+              </div>
+              <span class="badge badge-info">ANC ${(p.ancVisits || []).length} ကြိမ်</span>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin:9px 0;">
+              ${p.edd ? `<span class="badge badge-success">EDD: ${escHtml(p.edd)}</span>` : ''}
+              ${p.nextAppt ? `<span class="badge badge-warning">📅 ရက်ချိန်း: ${escHtml(p.nextAppt)}</span>` : ''}
+              ${p.childDob ? `<span class="badge badge-info">💉 ကာကွယ်ဆေး ${doneCount}/${EPI_STAGES.length}</span>` : ''}
+            </div>
+
+            <div class="grid-3">
+              <button type="button" class="btn btn-soft btn-sm" onclick="openEditPatientForm('${p.id}')">✏️ ကြည့်/ပြင်</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="openPatientOnChart('${p.id}')">📈 ဂရပ်ကြည့်</button>
+              <button type="button" class="btn btn-outline btn-sm" style="color:var(--danger);" onclick="confirmDeletePatient('${p.id}')">🗑️ ဖျက်</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function openPatientOnChart(patientId) {
+      const p = appState.patients.find(x => x.id === patientId);
+      switchTab("tools");
+      switchToolPanel("growth");
+      populateChartPatientSelect();
+      document.getElementById("chartPatientSelect").value = patientId;
+      if (p && p.childWeights && p.childWeights.length > 0) {
+        setChartMode(p.childGender === "မိန်းကလေး" ? "girl" : "boy");
+      } else {
+        setChartMode("mother");
+      }
+    }
+
+    function confirmDeletePatient(patientId) {
+      const p = appState.patients.find(x => x.id === patientId);
+      openModal("🗑️ မှတ်တမ်း ဖျက်ရန်", `
+        <p style="margin-top:0;"><strong>${escHtml(p ? p.motherName : patientId)}</strong> ၏ မှတ်တမ်းကို အပြီးတိုင် ဖျက်လိုပါသလား?</p>
+        <div class="grid-2">
+          <button type="button" class="btn btn-outline" onclick="closeModal()">မဖျက်ပါ</button>
+          <button type="button" class="btn btn-danger" onclick="deletePatientConfirmed('${patientId}')">ဖျက်မည်</button>
+        </div>
+      `);
+    }
+
+    function deletePatientConfirmed(patientId) {
+      appState.patients = appState.patients.filter(p => p.id !== patientId);
+      appState.outbox = appState.outbox.filter(o => o.patientId !== patientId);
+      saveJSON(LS_KEYS.PATIENTS, appState.patients);
+      saveJSON(LS_KEYS.OUTBOX, appState.outbox);
+      closeModal();
+      regenerateAllNotifications();
+      renderPatientList();
+      showToast("လူနာမှတ်တမ်း ဖျက်လိုက်ပါပြီ");
+    }
+
+    /* ==========================================================================
+       6. TOOLS TAB: EDD, AUTO-PLOTTING GROWTH CHARTS (CANVAS), BP & BMI
+       ========================================================================== */
+    function switchToolPanel(panel) {
+      ["edd", "growth", "bp"].forEach(k => {
+        document.getElementById("toolPanel-" + k).style.display = k === panel ? "block" : "none";
+        document.getElementById("toolPill-" + k).classList.toggle("active", k === panel);
+      });
+      if (panel === "growth") {
+        populateChartPatientSelect();
+        drawActiveChart();
+      }
+    }
+
+    /* Tool 1: Exact EDD Format & Baby Size (Weeks 4-42) */
+    function calculateEddTool() {
+      const lmpVal = document.getElementById("eddLmpInput").value;
+      const box = document.getElementById("eddResultBox");
+      if (!lmpVal) { box.innerHTML = `<div class="muted">နောက်ဆုံးရာသီလာသည့် ပထမရက် (LMP) ကို ရွေးချယ်ပါ။</div>`; return; }
+
+      const lmp = new Date(lmpVal + "T00:00:00");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const totalDays = Math.floor((today - lmp) / 86400000);
+
+      if (totalDays < 0) {
+        box.innerHTML = `<strong style="color:var(--danger);">⚠️ ရာသီလာသည့်ရက်သည် ယနေ့ထက် စောရပါမည်။</strong>`;
+        return;
+      }
+
+      const totalWeeks = Math.floor(totalDays / 7);
+      const remDays = totalDays % 7;
+      const months = Math.floor(totalWeeks / 4);
+      const monthWeeks = totalWeeks % 4;
+      const eddStr = new Date(lmp.getTime() + 280 * 86400000).toISOString().split("T")[0];
+
+      let sizeDesc = "သန္ဓေတည်စ အဆင့် (0.2 cm အောက်)";
+      if (totalWeeks >= 4) {
+        const clampedW = Math.min(42, Math.max(4, totalWeeks));
+        sizeDesc = FETAL_SIZE_MAP[clampedW];
+      }
+
+      box.innerHTML = `
+        <div style="font-size:19px; font-weight:900; margin-bottom:4px;">[${months}လ ${monthWeeks}ပတ် ${remDays}ရက်]</div>
+        <div style="font-size:16.5px; font-weight:800; margin-bottom:8px;">{${totalWeeks}ပတ် နှင့် ${remDays}ရက်} ရှိပါပြီ</div>
+        <div style="font-size:14px; font-weight:800; margin-bottom:6px;">📅 ခန့်မှန်းမွေးဖွားရက် (EDD): ${eddStr}</div>
+        <div style="font-size:14px; font-weight:800;">👶 ကလေးအရွယ်အစား: ${escHtml(sizeDesc)}</div>
+      `;
+    }
+
+    /* Tool 2: Auto-Plotting Growth Charts */
+    function populateChartPatientSelect() {
+      const sel = document.getElementById("chartPatientSelect");
+      const prev = sel.value;
+      sel.innerHTML = `<option value="">-- ယာယီစမ်းသပ် အမှတ်ထည့်ရန် --</option>` +
+        appState.patients.map(p => `<option value="${p.id}">${escHtml(p.motherName)}${p.childName ? ' • ' + escHtml(p.childName) : ''} (${p.id})</option>`).join("");
+      if (prev && appState.patients.some(p => p.id === prev)) sel.value = prev;
+      else if (appState.patients.length > 0 && !prev) sel.value = appState.patients[0].id;
+    }
+
+    function setChartMode(mode) {
+      appState.chartMode = mode;
+      ["mother", "boy", "girl"].forEach(m => {
+        document.getElementById("chartTab-" + m).classList.toggle("active", m === mode);
+      });
+
+      const banner = document.getElementById("chartBannerHeader");
+      const xLbl = document.getElementById("quickXLabel");
+      if (mode === "mother") {
+        banner.style.background = "var(--primary-soft)";
+        banner.style.color = "var(--primary-dark)";
+        banner.textContent = "🤰 ကိုယ်ဝန်ဆောင် ကိုယ်အလေးချိန်ဇယား (မိခင် ၀ - ၄၀ ပတ်)";
+        xLbl.textContent = "ကိုယ်ဝန်အပတ် (0 - 40)";
+      } else if (mode === "boy") {
+        banner.style.background = "var(--boy-soft)";
+        banner.style.color = "var(--boy-main)";
+        banner.textContent = "👦 (၅) နှစ်အောက်ကလေး ကြီးထွားဖွံ့ဖြိုးမှုဇယား — ယောက်ျားလေး (WHO)";
+        xLbl.textContent = "ကလေးအသက် (လ 0 - 60)";
+      } else {
+        banner.style.background = "var(--girl-soft)";
+        banner.style.color = "var(--girl-main)";
+        banner.textContent = "👧 (၅) နှစ်အောက်ကလေး ကြီးထွားဖွံ့ဖြိုးမှုဇယား — မိန်းကလေး (WHO)";
+        xLbl.textContent = "ကလေးအသက် (လ 0 - 60)";
+      }
+      drawActiveChart();
+    }
+
+    function getPointsForActiveChart() {
+      const pid = document.getElementById("chartPatientSelect").value;
+      const p = appState.patients.find(x => x.id === pid);
+      if (p) {
+        if (appState.chartMode === "mother") {
+          return (p.ancVisits || [])
+            .filter(v => Number(v.weeks) >= 0 && Number(v.weight) > 0)
+            .map(v => ({ x: Number(v.weeks), y: Number(v.weight) }))
+            .sort((a, b) => a.x - b.x);
+        } else {
+          return (p.childWeights || [])
+            .filter(w => Number(w.month) >= 0 && Number(w.weight) > 0)
+            .map(w => ({ x: Number(w.month), y: Number(w.weight) }))
+            .sort((a, b) => a.x - b.x);
+        }
+      }
+      return appState.quickChartPoints[appState.chartMode] || [];
+    }
+
+    function addQuickChartPoint() {
+      const xVal = Number(document.getElementById("quickXInput").value);
+      const yVal = Number(document.getElementById("quickYInput").value);
+      if (isNaN(xVal) || !yVal || yVal <= 0) {
+        showToast("အပတ်/လ နှင့် ကိုယ်အလေးချိန် (kg) မှန်ကန်စွာ ထည့်ပါ", true);
+        return;
+      }
+
+      const pid = document.getElementById("chartPatientSelect").value;
+      const p = appState.patients.find(x => x.id === pid);
+      if (p) {
+        if (appState.chartMode === "mother") {
+          p.ancVisits = p.ancVisits || [];
+          p.ancVisits.push({ visitNum: p.ancVisits.length + 1, date: getOffsetDate(0), weeks: xVal, weight: yVal, bp: "120/80", fh: "-", fhs: "-", edema: "မရှိ", meds: "-", nextAppt: "" });
+        } else {
+          p.childWeights = p.childWeights || [];
+          p.childWeights.push({ month: xVal, weight: yVal, muac: "-", vitA: "မတိုက်ရသေး", deworm: "မတိုက်ရသေး" });
+        }
+        saveJSON(LS_KEYS.PATIENTS, appState.patients);
+        regenerateAllNotifications();
+      } else {
+        appState.quickChartPoints[appState.chartMode].push({ x: xVal, y: yVal });
+        appState.quickChartPoints[appState.chartMode].sort((a, b) => a.x - b.x);
+      }
+
+      document.getElementById("quickXInput").value = "";
+      document.getElementById("quickYInput").value = "";
+      drawActiveChart();
+      showToast("ဂရပ်ဇယားတွင် အမှတ်ထည့်ပြီး မျဉ်းဆွဲလိုက်ပါပြီ");
+    }
+
+    function clearQuickChartPoints() {
+      const pid = document.getElementById("chartPatientSelect").value;
+      if (pid) {
+        showToast("သိမ်းထားသော လူနာအမှတ်များကို မှတ်တမ်းစာမျက်နှာတွင် ပြင်ဆင်ဖျက်နိုင်ပါသည်");
+        return;
+      }
+      appState.quickChartPoints[appState.chartMode] = [];
+      drawActiveChart();
+    }
+
+    function drawActiveChart() {
+      const canvas = document.getElementById("growthCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width, H = canvas.height;
+      const padL = 42, padR = 16, padT = 18, padB = 34;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, W, H);
+
+      const isMother = appState.chartMode === "mother";
+      const maxX = isMother ? 40 : 60;
+      const minY = isMother ? 36 : 2;
+      const maxY = isMother ? 63 : 20;
+
+      const pxX = x => padL + (Math.max(0, Math.min(maxX, x)) / maxX) * plotW;
+      const pxY = y => padT + plotH - ((Math.max(minY, Math.min(maxY, y)) - minY) / (maxY - minY)) * plotH;
+
+      // 1. Background Zones & Reference Curves
+      if (isMother) {
+        ctx.fillStyle = "#f0fdfa";
+        ctx.fillRect(padL, padT, plotW, plotH);
+
+        // Myanmar MCH Book Upper & Lower Maternal Reference Curves
+        ctx.strokeStyle = "#475569";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        for (let w = 0; w <= 40; w += 4) {
+          const yUp = 53.5 + (w / 40) * 9.0;
+          if (w === 0) ctx.moveTo(pxX(w), pxY(yUp));
+          else ctx.lineTo(pxX(w), pxY(yUp));
+        }
+        ctx.stroke();
+
+        ctx.beginPath();
+        for (let w = 0; w <= 40; w += 4) {
+          const yLow = 39.5 + (w / 40) * 7.5;
+          if (w === 0) ctx.moveTo(pxX(w), pxY(yLow));
+          else ctx.lineTo(pxX(w), pxY(yLow));
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else {
+        const refArr = appState.chartMode === "girl" ? WHO_GIRL_REF : WHO_BOY_REF;
+
+        // Red Zone (Severe Underweight)
+        ctx.fillStyle = "#fecaca";
+        ctx.fillRect(padL, padT, plotW, plotH);
+
+        // Yellow Zone (Moderate Underweight)
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        ctx.moveTo(pxX(0), pxY(maxY));
+        for (let m = 0; m <= 60; m += 2) ctx.lineTo(pxX(m), pxY(interpWhoRef(refArr, m).red));
+        ctx.lineTo(pxX(60), pxY(maxY));
+        ctx.closePath();
+        ctx.fill();
+
+        // Green Zone (Good Growth)
+        ctx.fillStyle = "#bbf7d0";
+        ctx.beginPath();
+        ctx.moveTo(pxX(0), pxY(maxY));
+        for (let m = 0; m <= 60; m += 2) ctx.lineTo(pxX(m), pxY(interpWhoRef(refArr, m).yel));
+        ctx.lineTo(pxX(60), pxY(maxY));
+        ctx.closePath();
+        ctx.fill();
+
+        // Median Reference Line
+        ctx.strokeStyle = "#15803d";
+        ctx.lineWidth = 1.6;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        for (let m = 0; m <= 60; m += 2) {
+          const ym = interpWhoRef(refArr, m).med;
+          if (m === 0) ctx.moveTo(pxX(m), pxY(ym));
+          else ctx.lineTo(pxX(m), pxY(ym));
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // 2. Gridlines & Labels
+      ctx.strokeStyle = "rgba(100, 116, 139, 0.25)";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#334155";
+      ctx.font = "11px sans-serif";
+
+      const xStep = isMother ? 4 : 6;
+      for (let x = 0; x <= maxX; x += xStep) {
+        const xPos = pxX(x);
+        ctx.beginPath(); ctx.moveTo(xPos, padT); ctx.lineTo(xPos, padT + plotH); ctx.stroke();
+        ctx.fillText(String(x), xPos - 6, padT + plotH + 15);
+      }
+
+      const yStep = isMother ? 3 : 2;
+      for (let y = minY; y <= maxY; y += yStep) {
+        const yPos = pxY(y);
+        ctx.beginPath(); ctx.moveTo(padL, yPos); ctx.lineTo(padL + plotW, yPos); ctx.stroke();
+        ctx.fillText(String(y), 10, yPos + 4);
+      }
+
+      ctx.font = "bold 11px sans-serif";
+      ctx.fillText(
+        isMother ? "ကိုယ်ဝန်ကာလ (ရက်သတ္တပတ်) vs ကိုယ်အလေးချိန် (kg)" : "အသက် (လ) • အစိမ်း=ကောင်း | အဝါ=မကောင်း | အနီ=စိုးရိမ်ရ",
+        padL + 6, H - 5
+      );
+
+      // 3. Plot Data Points & Auto-Connect Line
+      const pts = getPointsForActiveChart();
+      const statusEl = document.getElementById("chartStatusBanner");
+      const summaryEl = document.getElementById("chartPointsSummary");
+
+      if (pts.length === 0) {
+        statusEl.className = "badge-info";
+        statusEl.textContent = "ကိုယ်အလေးချိန် ထည့်သွင်းလိုက်ပါက ဂရပ်မျဉ်း အလိုအလျောက် ဆွဲပေးပါမည်။";
+        summaryEl.textContent = "";
+        return;
+      }
+
+      ctx.strokeStyle = isMother ? "#0f766e" : (appState.chartMode === "girl" ? "#db2777" : "#0284c7");
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      pts.forEach((pt, i) => {
+        if (i === 0) ctx.moveTo(pxX(pt.x), pxY(pt.y));
+        else ctx.lineTo(pxX(pt.x), pxY(pt.y));
+      });
+      ctx.stroke();
+
+      pts.forEach(pt => {
+        const x = pxX(pt.x), y = pxY(pt.y);
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#dc2626";
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText(`${pt.y}kg`, x - 14, y - 9);
+      });
+
+      const last = pts[pts.length - 1];
+      const prev = pts.length >= 2 ? pts[pts.length - 2] : null;
+      const dropped = prev && last.y < prev.y;
+
+      if (isMother) {
+        statusEl.className = dropped ? "badge-danger" : "badge-success";
+        statusEl.textContent = dropped
+          ? `🚨 ကိုယ်အလေးချိန် ကျဆင်းနေပါသည် (${prev.y} kg → ${last.y} kg)`
+          : `✅ ကောင်းမွန်ပါသည် — နောက်ဆုံး: ${last.x} ပတ် (${last.y} kg)`;
+      } else {
+        const refArr = appState.chartMode === "girl" ? WHO_GIRL_REF : WHO_BOY_REF;
+        const ref = interpWhoRef(refArr, last.x);
+        let cls = "badge-success";
+        let msg = "🟢 ကောင်း (WHO အစိမ်းရောင်ဇုန်)";
+        if (last.y < ref.red) { cls = "badge-danger"; msg = "🔴 စိုးရိမ်ရ (WHO အနီရောင်ဇုန် — ဆေးရုံ/ဆေးခန်းပြပါ)"; }
+        else if (last.y < ref.yel) { cls = "badge-warning"; msg = "🟡 မကောင်း (WHO အဝါရောင်ဇုန် — အာဟာရ ပိုဂရုစိုက်ပါ)"; }
+        if (dropped) { cls = "badge-danger"; msg = `🚨 ကိုယ်အလေးချိန် ကျဆင်း (${prev.y} kg → ${last.y} kg) • ` + msg; }
+        statusEl.className = cls;
+        statusEl.textContent = msg;
+      }
+
+      summaryEl.textContent = "မှတ်တမ်းအမှတ်များ: " + pts.map(p => `${p.x}${isMother ? 'ပတ်' : 'လ'} (${p.y}kg)`).join(" → ");
+    }
+
+    /* Tool 3 & 4: BP & BMI */
+    function calculateBpTool() {
+      const sys = Number(document.getElementById("bpSysInput").value);
+      const dia = Number(document.getElementById("bpDiaInput").value);
+      const box = document.getElementById("bpResultBox");
+      if (!sys || !dia) { box.style.display = "none"; return; }
+      box.style.display = "block";
+      if (sys >= 140 || dia >= 90) {
+        box.className = "badge-danger";
+        box.textContent = "🚨 သွေးတိုး / ကိုယ်ဝန်ဆိပ်တက် အန္တရာယ် (≥140/90) — ဆေးရုံ/ဆေးခန်းသို့ ချက်ချင်းပြသပါ!";
+      } else if (sys >= 130 || dia >= 80) {
+        box.className = "badge-warning";
+        box.textContent = "🟡 သွေးပေါင်အနည်းငယ်တက် (130-139 / 80-89) — မကြာခဏ ပြန်လည်စစ်ဆေးပါ။";
+      } else if (sys < 90 || dia < 60) {
+        box.className = "badge-info";
+        box.textContent = "🔵 သွေးပေါင်ကျနေသည် (<90/60) — အနားယူပြီး ရေ/အရည်များများ သောက်ပါ။";
+      } else {
+        box.className = "badge-success";
+        box.textContent = "🟢 ပုံမှန် သွေးပေါင်ချိန် (<130/80) — ကောင်းမွန်ပါသည်။";
+      }
+    }
+
+    function calculateBmiTool() {
+      const w = Number(document.getElementById("bmiWeightInput").value);
+      const h = Number(document.getElementById("bmiHeightInput").value);
+      const box = document.getElementById("bmiResultBox");
+      if (!w || !h || h < 50) { box.style.display = "none"; return; }
+      const bmi = w / ((h / 100) * (h / 100));
+      box.style.display = "block";
+      if (bmi < 18.5) {
+        box.className = "badge-warning";
+        box.textContent = `BMI: ${bmi.toFixed(1)} — ကိုယ်အလေးချိန် နည်းနေသည် (အာဟာရ ပိုမိုစားသုံးပါ)`;
+      } else if (bmi < 25) {
+        box.className = "badge-success";
+        box.textContent = `BMI: ${bmi.toFixed(1)} — ပုံမှန် ကိုယ်အလေးချိန်`;
+      } else if (bmi < 30) {
+        box.className = "badge-warning";
+        box.textContent = `BMI: ${bmi.toFixed(1)} — ကိုယ်အလေးချိန် အနည်းငယ်များနေသည်`;
+      } else {
+        box.className = "badge-danger";
+        box.textContent = `BMI: ${bmi.toFixed(1)} — အဝလွန်အဆင့် (သွေးတိုး/ဆီးချို သတိပြုပါ)`;
+      }
+    }
+
+    /* ==========================================================================
+       7. KNOWLEDGE TAB (ALL 9 CHAPTERS + SEARCH + BOOKMARKS)
+       ========================================================================== */
+    function setGuideFilter(cat) {
+      appState.guideFilter = cat;
+      ["all", "bookmarked", "pregnancy", "danger", "child", "fp"].forEach(k => {
+        document.getElementById("gFilter-" + k).classList.toggle("active", k === cat);
+      });
+      renderGuides();
+    }
+
+    function renderGuides() {
+      const q = (document.getElementById("guideSearchInput").value || "").trim().toLowerCase();
+      let list = KNOWLEDGE_CHAPTERS;
+      if (appState.guideFilter === "bookmarked") list = list.filter(g => appState.bookmarks.includes(g.id));
+      else if (appState.guideFilter !== "all") list = list.filter(g => g.cat === appState.guideFilter);
+
+      if (q) {
+        list = list.filter(g =>
+          g.title.toLowerCase().includes(q) ||
+          g.summary.toLowerCase().includes(q) ||
+          g.html.toLowerCase().includes(q)
+        );
+      }
+
+      const el = document.getElementById("guidesListContainer");
+      if (list.length === 0) {
+        el.innerHTML = `<div class="card muted" style="text-align:center;">ရှာဖွေမှုနှင့် ကိုက်ညီသော အကြောင်းအရာ မတွေ့ရှိပါ။</div>`;
+        return;
+      }
+
+      el.innerHTML = list.map(g => {
+        const isFav = appState.bookmarks.includes(g.id);
+        return `
+          <div class="card ${g.cat === 'danger' ? 'card-danger' : ''}">
+            <div class="guide-card-head" onclick="openGuideDetail('${g.id}')">
+              <div class="guide-icon" style="${g.cat === 'danger' ? 'background:#fee2e2;' : ''}">${g.icon}</div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-weight:800; font-size:14.5px;">${escHtml(g.title)}</div>
+                <div class="muted" style="font-size:12.5px; margin-top:2px; ${g.cat === 'danger' ? 'color:var(--danger-text);' : ''}">${escHtml(g.summary)}</div>
+              </div>
+              <button type="button" class="star-btn" onclick="event.stopPropagation(); toggleGuideBookmark('${g.id}')" style="color:${isFav ? '#f59e0b' : '#94a3b8'};" aria-label="Bookmark">
+                ${isFav ? '★' : '☆'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleGuideBookmark(id) {
+      if (appState.bookmarks.includes(id)) {
+        appState.bookmarks = appState.bookmarks.filter(x => x !== id);
+        showToast("သိမ်းထားစာရင်းမှ ဖယ်ရှားလိုက်ပါပြီ");
+      } else {
+        appState.bookmarks.push(id);
+        showToast("★ သိမ်းထားစာရင်းထဲ ထည့်လိုက်ပါပြီ");
+      }
+      saveJSON(LS_KEYS.BOOKMARKS, appState.bookmarks);
+      renderGuides();
+    }
+
+    function openGuideDetail(id) {
+      const g = KNOWLEDGE_CHAPTERS.find(x => x.id === id);
+      if (!g) return;
+      openModal(`${g.icon} ${g.title}`, `<div class="guide-content">${g.html}</div>`);
+    }
+
+    /* ==========================================================================
+       8. SETTINGS: OUTBOX SYNC, JSON BACKUP, 4-DIGIT PIN LOCK, RESET SAMPLE
+       ========================================================================== */
+    function renderSettingsView() {
+      document.getElementById("outboxBadgeSettings").textContent = `${appState.outbox.length} ခု`;
+      const obxEl = document.getElementById("outboxListEl");
+      if (appState.outbox.length === 0) {
+        obxEl.innerHTML = `<div class="muted" style="padding:6px 0;">✅ Sync လုပ်ရန် ကျန်ရှိသော မှတ်တမ်း မရှိပါ။</div>`;
+      } else {
+        obxEl.innerHTML = appState.outbox.map(o => `
+          <div class="sub-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div><strong>${escHtml(o.name)}</strong> <span class="muted">(${escHtml(o.patientId)})</span></div>
+            <span class="badge badge-warning">⏳ ${escHtml(o.time)}</span>
+          </div>
+        `).join("");
+      }
+
+      const pinOn = !!appState.settings.pinEnabled;
+      document.getElementById("pinToggleSwitch").checked = pinOn;
+      document.getElementById("pinStatusText").textContent = pinOn ? "ဖွင့်ထားသည် 🔒" : "ပိတ်ထားသည်";
+      document.getElementById("pinActionsRow").style.display = pinOn ? "grid" : "none";
+    }
+
+    function manualSyncOutbox() {
+      if (appState.outbox.length === 0) {
+        showToast("Sync လုပ်ရန် ကျန်ရှိသော မှတ်တမ်း မရှိပါ");
+        return;
+      }
+      if (!navigator.onLine) {
+        showToast("အင်တာနက် ချိတ်ဆက်မှု မရှိသေးပါ (Offline ဖြစ်နေပါသည်)", true);
+        return;
+      }
+      appState.outbox = [];
+      saveJSON(LS_KEYS.OUTBOX, []);
+      renderSettingsView();
+      showToast("✅ Outbox မှတ်တမ်းအားလုံး Sync ပြုလုပ်ပြီးပါပြီ!");
+    }
+
+    function exportJsonBackup() {
+      const payload = {
+        app: "MCH Care Offline",
+        exportedAt: new Date().toISOString(),
+        patients: appState.patients
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `MCH_Care_Backup_${getOffsetDate(0)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("⬇️ JSON Backup ဖိုင် ထုတ်ယူပြီးပါပြီ");
+    }
+
+    function importJsonBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!Array.isArray(parsed.patients)) throw new Error("Invalid");
+          appState.patients = parsed.patients;
+          saveJSON(LS_KEYS.PATIENTS, appState.patients);
+          regenerateAllNotifications();
+          renderPatientList();
+          showToast(`⬆️ လူနာမှတ်တမ်း ${parsed.patients.length} ခု ပြန်သွင်းပြီးပါပြီ`);
+        } catch (err) {
+          showToast("JSON Backup ဖိုင် ပုံစံမှားယွင်းနေပါသည်", true);
+        }
+        event.target.value = "";
+      };
+      reader.readAsText(file);
+    }
+
+    /* 4-Digit Offline PIN Lock */
+    function onTogglePinSwitch(enabled) {
+      if (enabled && !appState.settings.pinCode) {
+        document.getElementById("pinToggleSwitch").checked = false;
+        openSetPinModal();
+        return;
+      }
+      appState.settings.pinEnabled = enabled;
+      saveJSON(LS_KEYS.SETTINGS, appState.settings);
+      renderSettingsView();
+      showToast(enabled ? "🔒 PIN Lock ဖွင့်လိုက်ပါပြီ" : "PIN Lock ပိတ်လိုက်ပါပြီ");
+    }
+
+    function openSetPinModal() {
+      openModal("🔑 ဂဏန်း ၄ လုံး PIN သတ်မှတ်ရန်", `
+        <form onsubmit="saveNewPin(event)">
+          <div class="form-group">
+            <label class="form-label">PIN အသစ် (ဂဏန်း ၄ လုံး)</label>
+            <input type="password" id="newPin1" class="form-input" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" required placeholder="1234" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">ထပ်မံရိုက်ထည့်ပါ</label>
+            <input type="password" id="newPin2" class="form-input" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" required placeholder="1234" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">PIN သိမ်းမည်</button>
+        </form>
+      `);
+    }
+
+    function saveNewPin(e) {
+      e.preventDefault();
+      const p1 = document.getElementById("newPin1").value;
+      const p2 = document.getElementById("newPin2").value;
+      if (!/^\d{4}$/.test(p1) || p1 !== p2) {
+        showToast("ဂဏန်း ၄ လုံး တူညီအောင် ရိုက်ထည့်ပါ", true);
+        return;
+      }
+      appState.settings.pinCode = p1;
+      appState.settings.pinEnabled = true;
+      saveJSON(LS_KEYS.SETTINGS, appState.settings);
+      closeModal();
+      renderSettingsView();
+      showToast("🔒 4-Digit PIN သတ်မှတ်ပြီးပါပြီ");
+    }
+
+    function lockAppScreen() {
+      if (!appState.settings.pinEnabled || !appState.settings.pinCode) return;
+      appState.pinEntry = "";
+      updatePinDotsUI();
+      document.getElementById("pinPromptText").textContent = "ဂဏန်း ၄ လုံး PIN ရိုက်ထည့်ပါ";
+      document.getElementById("pinOverlay").classList.add("locked");
+    }
+
+    function updatePinDotsUI() {
+      document.querySelectorAll("#pinDotsWrap .pin-dot").forEach((dot, i) => {
+        dot.classList.toggle("filled", i < appState.pinEntry.length);
+      });
+    }
+
+    function enterPinDigit(d) {
+      if (appState.pinEntry.length >= 4) return;
+      appState.pinEntry += d;
+      updatePinDotsUI();
+      if (appState.pinEntry.length === 4) {
+        if (appState.pinEntry === appState.settings.pinCode) {
+          document.getElementById("pinOverlay").classList.remove("locked");
+          appState.pinEntry = "";
+          showToast("🔓 လော့ခ်ဖွင့်ပြီးပါပြီ");
+        } else {
+          document.getElementById("pinPromptText").textContent = "❌ PIN မှားနေပါသည် - ပြန်ရိုက်ပါ";
+          setTimeout(() => { appState.pinEntry = ""; updatePinDotsUI(); }, 300);
+        }
+      }
+    }
+
+    function clearPinDigits() { appState.pinEntry = ""; updatePinDotsUI(); }
+    function backspacePinDigit() { appState.pinEntry = appState.pinEntry.slice(0, -1); updatePinDotsUI(); }
+
+    function confirmResetSampleData() {
+      openModal("♻️ Reset Sample Data", `
+        <p style="margin-top:0;">လက်ရှိမှတ်တမ်းများကို ရှင်းလင်းပြီး မူလနမူနာလူနာ (MCH-0001 - ဒေါ်အေးအေး) ဖြင့် ပြန်လည်စတင်မည်လား?</p>
+        <div class="grid-2">
+          <button type="button" class="btn btn-outline" onclick="closeModal()">မလုပ်ပါ</button>
+          <button type="button" class="btn btn-danger" onclick="executeResetSampleData()">ပြန်စတင်မည်</button>
+        </div>
+      `);
+    }
+
+    function executeResetSampleData() {
+      appState.patients = [buildSamplePatient()];
+      appState.outbox = [{ id: "OBX-1", patientId: "MCH-0001", name: "ဒေါ်အေးအေး", time: new Date().toLocaleTimeString() }];
+      appState.notifications = [];
+      saveJSON(LS_KEYS.PATIENTS, appState.patients);
+      saveJSON(LS_KEYS.OUTBOX, appState.outbox);
+      saveJSON(LS_KEYS.NOTIS, []);
+      closeModal();
+      regenerateAllNotifications();
+      renderPatientList();
+      renderSettingsView();
+      showToast("♻️ နမူနာဒေတာ ပြန်လည်ထည့်သွင်းပြီးပါပြီ");
+    }
+
+    /* ==========================================================================
+       9. UTILITIES: MODAL, TOAST, NETWORK DOT & ESCAPE HTML
+       ========================================================================== */
+    function openModal(title, html) {
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalContent").innerHTML = html;
+      document.getElementById("modalBackdrop").classList.add("open");
+    }
+
+    function closeModal() {
+      document.getElementById("modalBackdrop").classList.remove("open");
+    }
+
+    function showToast(message, isDanger = false) {
+      const wrap = document.getElementById("toastWrap");
+      const toast = document.createElement("div");
+      toast.className = "toast" + (isDanger ? " danger" : "");
+      toast.textContent = message;
+      wrap.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    function escHtml(str) {
+      return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function updateNetIndicator() {
+      const dot = document.getElementById("headerNetDot");
+      dot.classList.toggle("offline", !navigator.onLine);
+    }
+
+    /* ==========================================================================
+       10. BOOTSTRAP APPLICATION ON LOAD
+       ========================================================================== */
+    window.addEventListener("online", updateNetIndicator);
+    window.addEventListener("offline", updateNetIndicator);
+
+    window.addEventListener("DOMContentLoaded", () => {
+      updateNetIndicator();
+      initHistoryCheckboxes();
+      initializeData();
+      initBackProtection();
+
+      // Default sample LMP (25 weeks + 2 days ago) so EDD tool shows formatted output immediately
+      document.getElementById("eddLmpInput").value = getOffsetDate(-177);
+      calculateEddTool();
+
+      renderGuides();
+      renderPatientList();
+      populateChartPatientSelect();
+      drawActiveChart();
+      renderSettingsView();
+
+      if (appState.settings.pinEnabled && appState.settings.pinCode) {
+        lockAppScreen();
+      }
+    });
+  </script>
+</body>
+</html>
+```
