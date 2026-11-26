@@ -24,10 +24,65 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Prepare web files
+      - name: Prepare Offline-First Auto-Update Web Files
         run: |
           mkdir -p www
-          cp index.html www/index.html
+          cp index.html www/app-bundle.html
+          cat << 'EOF' > www/index.html
+          <!DOCTYPE html>
+          <html lang="my">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>MCH Care</title>
+            <style>
+              body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f0fdfa;font-family:sans-serif;color:#0f766e;text-align:center;}
+            </style>
+          </head>
+          <body>
+            <div>
+              <div style="font-size:34px;margin-bottom:8px;">🏥</div>
+              <div style="font-weight:700;font-size:15px;">MCH Care ဖွင့်နေပါသည်...</div>
+            </div>
+            <script>
+              (function(){
+                var BUILD_ID = "__BUILD_ID__";
+                function hashStr(s){
+                  var clean = String(s||"").replace(/\r\n/g,"\n").trim();
+                  var h = 5381;
+                  for(var i=0;i<clean.length;i++){h=((h<<5)+h)+clean.charCodeAt(i);h=h&h;}
+                  return clean.length + "_" + h;
+                }
+                function boot(html){
+                  try{sessionStorage.setItem("mch_loaded_hash", hashStr(html));}catch(e){}
+                  document.open();
+                  document.write(html);
+                  document.close();
+                }
+                try{
+                  if(localStorage.getItem("mch_apk_build") !== BUILD_ID){
+                    localStorage.removeItem("mch_ota_html");
+                    localStorage.setItem("mch_apk_build", BUILD_ID);
+                  }
+                }catch(e){}
+                var cached = "";
+                try{cached = localStorage.getItem("mch_ota_html") || "";}catch(e){}
+                if(cached && cached.length > 2000 && cached.indexOf("</html>") !== -1){
+                  boot(cached);
+                } else {
+                  fetch("./app-bundle.html")
+                    .then(function(r){return r.text();})
+                    .then(function(html){boot(html);})
+                    .catch(function(){
+                      document.body.innerHTML = '<div style="padding:20px;">အက်ပ်ဖွင့်ရာတွင် အမှားဖြစ်ပေါ်နေပါသည်။ ပြန်ဖွင့်ပေးပါ။</div>';
+                    });
+                }
+              })();
+            </script>
+          </body>
+          </html>
+          EOF
+          sed -i "s/__BUILD_ID__/${{ github.run_number }}/g" www/index.html
 
       - name: Install Capacitor & create Android project
         run: |
