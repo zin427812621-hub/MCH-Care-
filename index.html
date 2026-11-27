@@ -4279,7 +4279,37 @@
 })();
 </script>
 <!-- ===== MCH ONLINE AD SYSTEM END ===== -->
+<!-- ===== FIX LEFTOVER OTA LOADER & LAYOUT ===== -->
+<style>
+  html, body {
+    display: block !important;
+    justify-content: normal !important;
+    align-items: normal !important;
+  }
+</style>
+<script>
+(function () {
+  function removeOtaLoader() {
+    var appShell = document.querySelector(".app-shell");
+    var kids = Array.prototype.slice.call(document.body.children || []);
+    for (var i = 0; i < kids.length; i++) {
+      var el = kids[i];
+      if (!el || el === appShell || el.tagName === "SCRIPT" || el.tagName === "STYLE") continue;
+      if (el.id === "mch-top-marquee" || el.id === "mch-ad-backdrop" || el.id === "mch-ad-mini" || el.id === "mchOtaBanner") continue;
+      if (el.classList && el.classList.contains("marquee-banner")) continue;
+      if (el.querySelector && (el.querySelector(".app-shell") || el.querySelector("button, input, form"))) continue;
+      var t = (el.textContent || "").trim();
+      if (t.length > 0 && t.length < 150 && (t.indexOf("ဖွင့်") !== -1 || t.indexOf("...") !== -1 || t.indexOf("Loading") !== -1)) {
+        el.style.display = "none";
+        if (el.parentNode) el.parentNode.removeChild(el);
+      }
+    }
+  }
+  removeOtaLoader();
+  setTimeout(removeOtaLoader, 300);
+})();
+</script>
   
 </body>
 </html>
-```
+
