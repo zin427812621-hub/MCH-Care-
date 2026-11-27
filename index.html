@@ -3967,6 +3967,318 @@
   }
 })();
 </script>
+  <!-- ===== MCH ONLINE AD SYSTEM START ===== -->
+<style>
+  #mch-ad-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99990;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  #mch-ad-backdrop.show {
+    opacity: 1;
+  }
+  #mch-ad-backdrop.closing {
+    background: rgba(15, 23, 42, 0);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    pointer-events: none;
+    transition: background 0.4s ease;
+  }
+  #mch-ad-popup-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 330px;
+    aspect-ratio: 1 / 1;
+    border-radius: 22px;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+    transform: scale(0.82);
+    opacity: 0;
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+    will-change: transform;
+  }
+  #mch-ad-backdrop.show #mch-ad-popup-wrap {
+    transform: scale(1);
+    opacity: 1;
+  }
+  #mch-ad-popup-wrap.minimizing {
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.55s ease, box-shadow 0.55s ease;
+    border-radius: 24%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  }
+  #mch-ad-popup-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: inherit;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+  }
+  #mch-ad-popup-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    z-index: 2;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+  #mch-ad-popup-close:active {
+    transform: scale(0.9);
+  }
+  #mch-ad-mini {
+    position: fixed;
+    right: 14px;
+    bottom: 84px;
+    width: 62px;
+    height: 62px;
+    z-index: 99980;
+    border-radius: 15px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.35);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: mchAdFloat 3.4s ease-in-out infinite;
+    will-change: transform;
+  }
+  #mch-ad-mini.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+  #mch-ad-mini.hiding {
+    animation: none;
+    opacity: 0;
+    transform: scale(0.2);
+    pointer-events: none;
+  }
+  #mch-ad-mini-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 15px;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+  }
+  #mch-ad-mini-close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid #ffffff;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    padding: 0;
+  }
+  @keyframes mchAdFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-7px); }
+  }
+</style>
+
+<script>
+(function () {
+  var ADS_CONFIG_URL = "https://raw.githubusercontent.com/zin427812621-hub/MCH-Care-/main/ads.json";
+  var LAST_POPUP_KEY = "mch_ad_last_popup_ts";
+  var MINI_SIZE = 62;
+  var MINI_RIGHT = 14;
+  var MINI_BOTTOM = 84;
+
+  function openViber(url) {
+    if (!url) return;
+    try {
+      window.location.href = url;
+    } catch (e) {}
+  }
+
+  function createMiniCard(posterSrc, cfg, immediate) {
+    if (document.getElementById("mch-ad-mini")) return;
+    var mini = document.createElement("div");
+    mini.id = "mch-ad-mini";
+    mini.setAttribute("aria-label", cfg.title || "Promo");
+
+    var img = document.createElement("img");
+    img.id = "mch-ad-mini-img";
+    img.src = posterSrc;
+    img.alt = cfg.title || "Promo";
+    img.addEventListener("click", function () {
+      openViber(cfg.viberUrl);
+    });
+
+    var closeBtn = document.createElement("button");
+    closeBtn.id = "mch-ad-mini-close";
+    closeBtn.type = "button";
+    closeBtn.innerHTML = "&times;";
+    closeBtn.setAttribute("aria-label", "ပိတ်ရန်");
+    closeBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      mini.classList.add("hiding");
+      setTimeout(function () {
+        if (mini.parentNode) mini.parentNode.removeChild(mini);
+      }, 320);
+    });
+
+    mini.appendChild(img);
+    mini.appendChild(closeBtn);
+    document.body.appendChild(mini);
+
+    if (immediate) {
+      mini.style.opacity = "1";
+      mini.classList.add("show");
+    } else {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          mini.classList.add("show");
+        });
+      });
+    }
+  }
+
+  function showPopup(posterSrc, cfg) {
+    if (document.getElementById("mch-ad-backdrop")) return;
+    try {
+      localStorage.setItem(LAST_POPUP_KEY, String(Date.now()));
+    } catch (e) {}
+
+    var backdrop = document.createElement("div");
+    backdrop.id = "mch-ad-backdrop";
+
+    var wrap = document.createElement("div");
+    wrap.id = "mch-ad-popup-wrap";
+
+    var img = document.createElement("img");
+    img.id = "mch-ad-popup-img";
+    img.src = posterSrc;
+    img.alt = cfg.title || "Promo";
+    img.addEventListener("click", function () {
+      openViber(cfg.viberUrl);
+    });
+
+    var closeBtn = document.createElement("button");
+    closeBtn.id = "mch-ad-popup-close";
+    closeBtn.type = "button";
+    closeBtn.innerHTML = "&times;";
+    closeBtn.setAttribute("aria-label", "ပိတ်ရန်");
+
+    var isClosing = false;
+    function minimizeToCorner() {
+      if (isClosing) return;
+      isClosing = true;
+
+      var rect = wrap.getBoundingClientRect();
+      var targetCenterX = window.innerWidth - MINI_RIGHT - (MINI_SIZE / 2);
+      var targetCenterY = window.innerHeight - MINI_BOTTOM - (MINI_SIZE / 2);
+      var currentCenterX = rect.left + (rect.width / 2);
+      var currentCenterY = rect.top + (rect.height / 2);
+      var dx = targetCenterX - currentCenterX;
+      var dy = targetCenterY - currentCenterY;
+      var scale = MINI_SIZE / (rect.width || 300);
+
+      closeBtn.style.opacity = "0";
+      backdrop.classList.add("closing");
+      wrap.classList.add("minimizing");
+      wrap.style.transform = "translate(" + dx + "px, " + dy + "px) scale(" + scale + ")";
+
+      setTimeout(function () {
+        if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+        createMiniCard(posterSrc, cfg, true);
+      }, 560);
+    }
+
+    closeBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      minimizeToCorner();
+    });
+
+    backdrop.addEventListener("click", function (e) {
+      if (e.target === backdrop) {
+        minimizeToCorner();
+      }
+    });
+
+    wrap.appendChild(img);
+    wrap.appendChild(closeBtn);
+    backdrop.appendChild(wrap);
+    document.body.appendChild(backdrop);
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        backdrop.classList.add("show");
+      });
+    });
+  }
+
+  function initOnlineAd() {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) return;
+
+    fetch(ADS_CONFIG_URL + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function (res) {
+        if (!res.ok) throw new Error("fetch_failed");
+        return res.json();
+      })
+      .then(function (cfg) {
+        if (!cfg || cfg.enabled !== true || !cfg.posterUrl) return;
+
+        var posterSrc = cfg.posterUrl + (cfg.posterUrl.indexOf("?") === -1 ? "?t=" : "&t=") + Date.now();
+        var preload = new Image();
+        preload.onload = function () {
+          var hours = Number(cfg.intervalHours);
+          if (!hours || hours < 0) hours = 4;
+          var intervalMs = hours * 60 * 60 * 1000;
+
+          var lastTs = 0;
+          try {
+            lastTs = Number(localStorage.getItem(LAST_POPUP_KEY) || "0");
+          } catch (e) {}
+
+          var shouldPopup = !lastTs || (Date.now() - lastTs) >= intervalMs;
+          if (shouldPopup) {
+            showPopup(posterSrc, cfg);
+          } else {
+            createMiniCard(posterSrc, cfg, false);
+          }
+        };
+        preload.src = posterSrc;
+      })
+      .catch(function () {});
+  }
+
+  setTimeout(initOnlineAd, 700);
+})();
+</script>
+<!-- ===== MCH ONLINE AD SYSTEM END ===== -->
   
 </body>
 </html>
